@@ -83,6 +83,10 @@ DATABASES = {
     }
 }
 
+AWS_ACCESS_KEY_ID = 'AKIA4YYA7W7DTVBUSCEI'
+AWS_SECRET_ACCESS_KEY = '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'
+SESSION_ENGINE = 'dynamodb_sessions.backends.dynamodb'
+DYNAMODB_SESSIONS_TABLE_NAME = 'contactdev'
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators

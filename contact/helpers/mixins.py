@@ -1,0 +1,95 @@
+from contact.services.db import Contacts
+
+from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
+from rest_framework.response import Response
+from rest_framework.renderers import JSONRenderer
+
+
+class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
+    """
+    Either create a single or many model instances in bulk by using the
+    Serializer's ``many=True``
+
+    .. note::
+        This mixin uses the same method to create model instances
+        as ``CreateModelMixin`` because both non-bulk and bulk
+        requests will use ``POST`` request method.
+    """
+
+    def create_contact_at_dynamoDB(self, serializer):
+        data = {
+            "userid": f"{serializer.data['user_id']}",
+            "device_contact_id": f"{serializer.data['device_contact_id']}",
+            "contact_name": f"{serializer.data['name']}",
+            "contact_phone_number": f"{serializer.data['phone_number']}",
+        }
+        return Contacts().add_contact(data)
+
+    def update_contact_at_dynamoDB(self, userid, phone_number, item):
+        data = {
+            "device_contact_id": f"{item['device_contact_id']}",
+            "contact_name": f"{item['contact_name']}",
+        }
+        return Contacts().update_contact(userid, phone_number, data)
+
+    def create(self, request, *args, **kwargs):
+        bulk = isinstance(request.data, list)
+        if not bulk:
+            serializer = self.get_serializer(data=request.data)
+            if serializer.is_valid():
+                self.create_contact_at_dynamoDB(serializer)
+                data = {
+                    "data": serializer.data,
+                    "message": "Contact added successfully",
+                }
+                return Response(data)
+            else:
+                data = {
+                    "data": serializer.errors,
+                    "message": "Error",
+                }
+                return Response(data)
+        else:
+            self.renderer_classes = (JSONRenderer,)
+            request.accepted_renderer = JSONRenderer()
+            list_data = request.data
+            results = []
+            for i, item in enumerate(list_data):
+                serializer = self.get_serializer(data=item)
+                if serializer.is_valid():
+                    self.create_contact_at_dynamoDB(serializer)
+                    data = {
+                        "index": i,
+                        "data": serializer.data,
+                        "message": "Contact added successfully",
+                    }
+                    results.append(data)
+                else:
+                    data = {"index": i, "message": "error", "error": serializer.errors}
+                    results.append(data)
+            return Response(results)
+
+    def update(self, request, pk, *args, **kwargs):
+        import pdb; pdb.set_trace()
+        if pk == "bulk":
+            self.renderer_classes = (JSONRenderer,)
+            request.accepted_renderer = JSONRenderer()
+            list_data = request.data
+            results = []
+            for i, item in enumerate(list_data):
+                self.update_contact_at_dynamoDB(
+                    item["userid"],
+                    item["contact_phone_number"],
+                    item,
+                )
+                data = {
+                    "index": i,
+                    "data": item,
+                    "message": "Contact updated successfully",
+                }
+                results.append(data)
+            return Response(results)
+        else:
+            data = {"message": "bulk not persent in url"}
+            return Response(results)
+
