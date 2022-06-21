@@ -91,10 +91,8 @@ class Contacts:
 
     def delete_contact(self, userid, phone_number):
         """
-        Deletes a movie from the table.
+        Deletes a contact from the table.
 
-        :param title: The title of the movie to delete.
-        :param year: The release year of the movie to delete.
         """
         try:
             self.table.delete_item(

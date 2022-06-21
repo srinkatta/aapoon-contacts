@@ -1,6 +1,6 @@
 from contact.services.db import Contacts
 
-from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
+from rest_framework.mixins import CreateModelMixin, UpdateModelMixin, DestroyModelMixin
 from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
 
@@ -31,6 +31,9 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
             "contact_name": f"{item['contact_name']}",
         }
         return Contacts().update_contact(userid, phone_number, data)
+
+    def delete_contact_at_dynamoDB(self, userid, phone_number):
+        return Contacts().delete_contact(userid, phone_number)
 
     def create(self, request, *args, **kwargs):
         bulk = isinstance(request.data, list)
@@ -70,7 +73,6 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
             return Response(results)
 
     def update(self, request, pk, *args, **kwargs):
-        import pdb; pdb.set_trace()
         if pk == "bulk":
             self.renderer_classes = (JSONRenderer,)
             request.accepted_renderer = JSONRenderer()
@@ -93,3 +95,24 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
             data = {"message": "bulk not persent in url"}
             return Response(results)
 
+    def destroy(self, request, pk, *args, **kwargs):
+        if pk == "bulk":
+            self.renderer_classes = (JSONRenderer,)
+            request.accepted_renderer = JSONRenderer()
+            list_data = request.data
+            results = []
+            for i, item in enumerate(list_data):
+                self.delete_contact_at_dynamoDB(
+                    item["userid"],
+                    item["contact_phone_number"],
+                )
+                data = {
+                    "index": i,
+                    "data": item,
+                    "message": "Contact deleted successfully",
+                }
+                results.append(data)
+            return Response(results)
+        else:
+            data = {"message": "bulk not persent in url"}
+            return Response(results)
