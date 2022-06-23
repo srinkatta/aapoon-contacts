@@ -25,15 +25,13 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
         }
         return Contacts().add_contact(data)
 
-    def update_contact_at_dynamoDB(self, userid, phone_number, item):
+    def update_contact_at_dynamoDB(self, uid, item):
         data = {
+            "contact_phone_number": f"{item['contact_phone_number']}",
             "device_contact_id": f"{item['device_contact_id']}",
             "contact_name": f"{item['contact_name']}",
         }
-        return Contacts().update_contact(userid, phone_number, data)
-
-    def delete_contact_at_dynamoDB(self, userid, phone_number):
-        return Contacts().delete_contact(userid, phone_number)
+        return Contacts().update_contact(uid, data)
 
     def create(self, request, *args, **kwargs):
         bulk = isinstance(request.data, list)
@@ -80,36 +78,13 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
             results = []
             for i, item in enumerate(list_data):
                 self.update_contact_at_dynamoDB(
-                    item["userid"],
-                    item["contact_phone_number"],
+                    item["id"],
                     item,
                 )
                 data = {
                     "index": i,
                     "data": item,
                     "message": "Contact updated successfully",
-                }
-                results.append(data)
-            return Response(results)
-        else:
-            data = {"message": "bulk not persent in url"}
-            return Response(results)
-
-    def destroy(self, request, pk, *args, **kwargs):
-        if pk == "bulk":
-            self.renderer_classes = (JSONRenderer,)
-            request.accepted_renderer = JSONRenderer()
-            list_data = request.data
-            results = []
-            for i, item in enumerate(list_data):
-                self.delete_contact_at_dynamoDB(
-                    item["userid"],
-                    item["contact_phone_number"],
-                )
-                data = {
-                    "index": i,
-                    "data": item,
-                    "message": "Contact deleted successfully",
                 }
                 results.append(data)
             return Response(results)

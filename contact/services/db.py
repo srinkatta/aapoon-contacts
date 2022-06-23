@@ -1,3 +1,4 @@
+import uuid
 import boto3
 
 # from django.conf import settings
@@ -12,7 +13,7 @@ class Contacts:
         self.client = None
         self.dynamodb = None
         self.initialize()
-        self.table = self.dynamodb.Table("contactdev")
+        self.table = self.dynamodb.Table("aapoon-contacts")
 
     def initialize(self):
         self.client = boto3.client(
@@ -40,6 +41,7 @@ class Contacts:
         try:
             self.table.put_item(
                 Item={
+                    "id": f"{uuid.uuid4()}",
                     "userid": data["userid"],
                     "contact_phone_number": data["contact_phone_number"],
                     "device_contact_id": data["device_contact_id"],
@@ -57,31 +59,31 @@ class Contacts:
             )
             raise
 
-    def update_contact(self, userid, phone_number, data):
+    def update_contact(self, uid, data):
         """
         Updates contact_name and device_contact_id data for a contact in the table.
 
         :param userid: User id
-        :param phone_number: Contact phone numner
+        :param contact_phone_number: Contact phone numner
         :param device_contact_id: Contact Id from device
         :param contact_name: Contact Name
         :return: The fields that were updated, with their new values.
         """
         try:
             response = self.table.update_item(
-                Key={"userid": userid, "contact_phone_number": phone_number},
-                UpdateExpression="set device_contact_id = :cid, contact_name = :cname",
+                Key={"id": uid},
+                UpdateExpression="set device_contact_id = :cid, contact_name = :cname, contact_phone_number = :cph",
                 ExpressionAttributeValues={
                     ":cid": data["device_contact_id"],
                     ":cname": data["contact_name"],
+                    ":cph": data["contact_phone_number"],
                 },
                 ReturnValues="UPDATED_NEW",
             )
         except Exception as err:
             print(
-                "Couldn't update contact %s in table %s. Here's why: %s: %s",
-                phone_number,
-                self.table.name,
+                "Couldn't update contact %s. Here's why: %s: %s",
+                uid,
                 err.response["Error"]["Code"],
                 err.response["Error"]["Message"],
             )
@@ -100,8 +102,9 @@ class Contacts:
             )
         except Exception as err:
             print(
-                "Couldn't delete contact %s. Here's why: %s: %s",
-                title,
+                "Couldn't delete contact %s and %s. Here's why: %s: %s",
+                userid,
+                phone_number,
                 err.response["Error"]["Code"],
                 err.response["Error"]["Message"],
             )
