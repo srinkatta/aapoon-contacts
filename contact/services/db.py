@@ -1,19 +1,21 @@
 import uuid
 import boto3
+import threading
 
-# from django.conf import settings
+from aapooncontact import settings
+from contact.helpers.utils import check_friend_status
 
 
 class Contacts:
     """Encapsulates an Amazon DynamoDB table of contact data."""
 
     def __init__(self):
-        self.AWS_ACCESS_KEY_ID = "AKIA4YYA7W7DTVBUSCEI"
-        self.AWS_SECRET_ACCESS_KEY = "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"
+        self.AWS_ACCESS_KEY_ID = settings.AWS_ACCESS_KEY_ID
+        self.AWS_SECRET_ACCESS_KEY = settings.AWS_SECRET_ACCESS_KEY
         self.client = None
         self.dynamodb = None
         self.initialize()
-        self.table = self.dynamodb.Table("aapoon-contacts")
+        self.table = self.dynamodb.Table(f"{settings.TABLE_NAME}")
 
     def initialize(self):
         self.client = boto3.client(
@@ -38,17 +40,17 @@ class Contacts:
         """
         Adds a contact to the table.
         """
+        payload = {
+            "id": f"{uuid.uuid4()}",
+            "userid": data["userid"],
+            "contact_phone_number": data["contact_phone_number"],
+            "device_contact_id": data["device_contact_id"],
+            "contact_name": data["contact_name"],
+            "friend": False,
+        }
         try:
-            self.table.put_item(
-                Item={
-                    "id": f"{uuid.uuid4()}",
-                    "userid": data["userid"],
-                    "contact_phone_number": data["contact_phone_number"],
-                    "device_contact_id": data["device_contact_id"],
-                    "contact_name": data["contact_name"],
-                    "friend": False,
-                }
-            )
+            self.table.put_item(Item=payload)
+            self.__friend_check(payload)
         except Exception as err:
             print(
                 "Couldn't add movie %s to table %s. Here's why: %s: %s",
@@ -72,11 +74,12 @@ class Contacts:
         try:
             response = self.table.update_item(
                 Key={"id": uid},
-                UpdateExpression="set device_contact_id = :cid, contact_name = :cname, contact_phone_number = :cph",
+                UpdateExpression="set device_contact_id = :cid, contact_name = :cname, contact_phone_number = :cph, friend = :f",
                 ExpressionAttributeValues={
                     ":cid": data["device_contact_id"],
                     ":cname": data["contact_name"],
                     ":cph": data["contact_phone_number"],
+                    ":f": data["friend"],
                 },
                 ReturnValues="UPDATED_NEW",
             )
@@ -109,3 +112,16 @@ class Contacts:
                 err.response["Error"]["Message"],
             )
             raise
+
+    def __friend_check(self, payload):
+        uuid = payload["id"]
+        status, friend = check_friend_status(payload["contact_phone_number"])
+
+        data = {
+            "contact_phone_number": f"{payload['contact_phone_number']}",
+            "device_contact_id": f"{payload['device_contact_id']}",
+            "contact_name": f"{payload['contact_name']}",
+            "friend": friend,
+        }
+
+        return self.update_contact(uuid, data)
