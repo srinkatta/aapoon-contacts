@@ -32,8 +32,24 @@ class Contacts:
         )
         return
 
+    def get_contact(self, userid, country_code, phone_number):
+        response = self.table.scan(
+            FilterExpression="contact_country_code = :code AND contact_phone_number = :contact_phone_number AND userid = :userid",
+            ExpressionAttributeValues={
+                ":code": f"{country_code}",
+                ":contact_phone_number": f"{phone_number}",
+                ":userid": f"{userid}",
+            },
+        )
+        return response["Items"]
+
     def list_contacts(self):
-        response = self.table.scan()
+        response = self.table.scan(
+            FilterExpression="friend = :f",
+            ExpressionAttributeValues={
+                ":f": False,
+            },
+        )
         return response["Items"]
 
     def add_contact(self, data):
@@ -43,6 +59,7 @@ class Contacts:
         payload = {
             "id": f"{uuid.uuid4()}",
             "userid": data["userid"],
+            "contact_country_code": data["contact_country_code"],
             "contact_phone_number": data["contact_phone_number"],
             "device_contact_id": data["device_contact_id"],
             "contact_name": data["contact_name"],
@@ -61,7 +78,42 @@ class Contacts:
             )
             raise
 
-    def update_contact(self, uid, data):
+    def update_contact(self, userid, country_code, phone_number, data):
+        """
+        Updates contact_name and device_contact_id data for a contact in the table.
+
+        :param userid: User id
+        :param contact_phone_number: Contact phone numner
+        :param device_contact_id: Contact Id from device
+        :param contact_name: Contact Name
+        :return: The fields that were updated, with their new values.
+        """
+        try:
+            contact = self.get_contact(userid, country_code, phone_number)
+            if contact:
+                response = self.table.update_item(
+                    Key={"id": contact[0]["id"]},
+                    UpdateExpression="set device_contact_id = :cid, contact_name = :cname, contact_phone_number = :cph, contact_country_code = :code",
+                    ExpressionAttributeValues={
+                        ":cid": data["device_contact_id"],
+                        ":cname": data["contact_name"],
+                        ":cph": data["contact_phone_number"],
+                        ":code": data["contact_country_code"],
+                    },
+                    ReturnValues="UPDATED_NEW",
+                )
+        except Exception as err:
+            print(
+                "Couldn't update contact %s. Here's why: %s: %s",
+                userid,
+                err.response["Error"]["Code"],
+                err.response["Error"]["Message"],
+            )
+            raise
+        else:
+            return response["Attributes"]
+
+    def patch_contact(self, uid, data):
         """
         Updates contact_name and device_contact_id data for a contact in the table.
 
@@ -74,11 +126,8 @@ class Contacts:
         try:
             response = self.table.update_item(
                 Key={"id": uid},
-                UpdateExpression="set device_contact_id = :cid, contact_name = :cname, contact_phone_number = :cph, friend = :f",
+                UpdateExpression="set friend = :f",
                 ExpressionAttributeValues={
-                    ":cid": data["device_contact_id"],
-                    ":cname": data["contact_name"],
-                    ":cph": data["contact_phone_number"],
                     ":f": data["friend"],
                 },
                 ReturnValues="UPDATED_NEW",
@@ -94,15 +143,15 @@ class Contacts:
         else:
             return response["Attributes"]
 
-    def delete_contact(self, userid, phone_number):
+    def delete_contact(self, userid, country_code, phone_number):
         """
         Deletes a contact from the table.
 
         """
         try:
-            self.table.delete_item(
-                Key={"userid": userid, "contact_phone_number": phone_number}
-            )
+            contact = self.get_contact(userid, country_code, phone_number)
+            if contact:
+                self.table.delete_item(Key={"id": contact[0]["id"]})
         except Exception as err:
             print(
                 "Couldn't delete contact %s and %s. Here's why: %s: %s",
@@ -115,6 +164,9 @@ class Contacts:
 
     def __friend_check(self, payload):
         uuid = payload["id"]
+        country_code = payload["contact_country_code"]
+        phone_number = payload["contact_phone_number"]
+        phone = f"{country_code}{phone_number}"
         status, friend = check_friend_status(payload["contact_phone_number"])
 
         data = {
@@ -124,4 +176,4 @@ class Contacts:
             "friend": friend,
         }
 
-        return self.update_contact(uuid, data)
+        return self.patch_contact(uuid, data)

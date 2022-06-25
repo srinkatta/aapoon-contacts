@@ -38,6 +38,7 @@ class ContactViewSet(BulkCreateContactMixin, viewsets.ModelViewSet):
             for i, item in enumerate(list_data):
                 Contacts().delete_contact(
                     item["userid"],
+                    item["contact_country_code"],
                     item["contact_phone_number"],
                 )
                 data = {

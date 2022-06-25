@@ -18,20 +18,22 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
 
     def create_contact_at_dynamoDB(self, serializer):
         data = {
-            "userid": f"{serializer.data['user_id']}",
+            "userid": f"{serializer.data['userid']}",
             "device_contact_id": f"{serializer.data['device_contact_id']}",
-            "contact_name": f"{serializer.data['name']}",
-            "contact_phone_number": f"{serializer.data['phone_number']}",
+            "contact_name": f"{serializer.data['contact_name']}",
+            "contact_phone_number": f"{serializer.data['contact_phone_number']}",
+            "contact_country_code": f"{serializer.data['contact_country_code']}",
         }
         return Contacts().add_contact(data)
 
-    def update_contact_at_dynamoDB(self, uid, item):
+    def update_contact_at_dynamoDB(self, userid, country_code, phone_number, item):
         data = {
+            "contact_country_code": f"{item['contact_country_code']}",
             "contact_phone_number": f"{item['contact_phone_number']}",
             "device_contact_id": f"{item['device_contact_id']}",
             "contact_name": f"{item['contact_name']}",
         }
-        return Contacts().update_contact(uid, data)
+        return Contacts().update_contact(userid, country_code, phone_number, data)
 
     def create(self, request, *args, **kwargs):
         bulk = isinstance(request.data, list)
@@ -77,8 +79,11 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
             list_data = request.data
             results = []
             for i, item in enumerate(list_data):
+
                 self.update_contact_at_dynamoDB(
-                    item["id"],
+                    item["userid"],
+                    item["contact_country_code"],
+                    item["contact_phone_number"],
                     item,
                 )
                 data = {
