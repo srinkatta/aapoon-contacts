@@ -24,7 +24,7 @@ RUN pip install -r requirements.txt
 
 # start serverd
 EXPOSE 8000
-CMD ["gunicorn", "--preload", "--bind", "0.0.0.0:8000", "--keep-alive", "180", "--workers", "3", "--worker-connections", "1000", "gcrmserver.wsgi:application"]
+CMD ["gunicorn", "--preload", "--bind", "0.0.0.0:8000", "--keep-alive", "180", "--workers", "3", "--worker-connections", "1000", "aapooncontact.wsgi:application"]
 
 #CMD ["python", "gcrmserver/bin/manage.py", "runserver", "0.0.0.0:8000"]
 
