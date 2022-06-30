@@ -73,6 +73,9 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
             return Response(results)
 
     def update(self, request, pk, *args, **kwargs):
+        """
+        id = "bulk" in order to update contacts in bulk.
+        """
         if pk == "bulk":
             self.renderer_classes = (JSONRenderer,)
             request.accepted_renderer = JSONRenderer()
