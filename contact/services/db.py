@@ -67,7 +67,6 @@ class Contacts:
         }
         try:
             self.table.put_item(Item=payload)
-            self.__friend_check(payload)
         except Exception as err:
             print(
                 "Couldn't add movie %s to table %s. Here's why: %s: %s",
