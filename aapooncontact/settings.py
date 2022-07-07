@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "drf_spectacular",
     # Custom App
     "contact",
 ]
@@ -87,6 +88,7 @@ AWS_ACCESS_KEY_ID = "AKIA4YYA7W7DTVBUSCEI"
 AWS_SECRET_ACCESS_KEY = "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"
 TABLE_NAME = "aapoon-contacts"
 
+friend_BASE_URL = "https://friend.aapoon.com"
 aapoon_BASE_URL = "https://qa.aapoon.com"
 aapoon_API_KEY = "z5yPWvMB.qeCwhXse3vyImVV7BKNgRYR1X5ufzHen"
 
@@ -132,3 +134,14 @@ STATIC_URL = "/static/"
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+REST_FRAMEWORK = {
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "aapoon contact",
+    "DESCRIPTION": "Contacts from aapoon",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+}

@@ -2,6 +2,7 @@ from rest_framework import permissions, viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
 
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 
 from contact.models import Contact
 from contact.api.serializers import ContactSerializer, ContactDeleteSerializer
@@ -12,11 +13,13 @@ from contact.services.db import Contacts
 class ContactViewSet(BulkCreateContactMixin, viewsets.ModelViewSet):
     """
     Viewset for Contact Model
+    In order to perform actions in bulk, send an array or list of objects with the given payload on every endpoint
     """
 
     queryset = Contact.objects.all()
     serializer_class = ContactSerializer
     permission_classes = (permissions.AllowAny,)
+    http_method_names = ("get", "post", "put")
 
     def list(self, request):
         contacts = Contacts().list_contacts()
@@ -32,6 +35,9 @@ class ContactViewSet(BulkCreateContactMixin, viewsets.ModelViewSet):
         serializer_class=ContactDeleteSerializer,
     )
     def bulk_delete(self, request, pk, *args, **kwargs):
+        """
+        id = "bulk" in order to delete contacts in bulk.
+        """
         results = []
         if pk == "bulk":
             list_data = request.data
