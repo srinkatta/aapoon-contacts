@@ -43,11 +43,12 @@ class Contacts:
         )
         return response["Items"]
 
-    def list_contacts(self):
+    def list_contacts(self, user_id):
         response = self.table.scan(
-            FilterExpression="friend = :f",
+            FilterExpression="friend = :f AND userid = :uid",
             ExpressionAttributeValues={
                 ":f": False,
+                ":uid": user_id,
             },
         )
         return response["Items"]
