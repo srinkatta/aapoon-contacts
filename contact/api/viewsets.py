@@ -21,8 +21,19 @@ class ContactViewSet(BulkCreateContactMixin, viewsets.ModelViewSet):
     permission_classes = (permissions.AllowAny,)
     http_method_names = ("get", "post", "put")
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="userid",
+                description="Filter the Contacts by User Id",
+                required=True,
+                type=int,
+            ),
+        ]
+    )
     def list(self, request):
-        contacts = Contacts().list_contacts()
+        user_id = request.GET.get('userid', '')
+        contacts = Contacts().list_contacts(user_id)
         return Response(contacts)
 
     @action(

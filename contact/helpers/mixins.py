@@ -119,7 +119,7 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
             data = {"message": "bulk not persent in url"}
             return Response(results)
 
-    def call_friend_app(data):
+    def call_friend_app(self, data):
         url = f"{friend_BASE_URL}/api/friends/check/"
         headers = {}
         result = requests.post(url, data=data, headers=headers)
