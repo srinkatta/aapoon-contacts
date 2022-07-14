@@ -4,7 +4,7 @@ from contact.services.db import Contacts
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin, DestroyModelMixin
 from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
-from aapooncontact.settings import friend_BASE_URL
+from aapooncontact.settings import aapoon_BASE_URL
 
 
 class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
@@ -120,7 +120,7 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
             return Response(results)
 
     def call_friend_app(self, data):
-        url = f"{friend_BASE_URL}/api/friends/check/"
+        url = f"{aapoon_BASE_URL}/api/friends/check/"
         headers = {}
         result = requests.post(url, data=data, headers=headers)
         if result.status_code == 200:
