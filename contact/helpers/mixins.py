@@ -1,5 +1,6 @@
 import requests
 from contact.services.db import Contacts
+from contact.helpers.service import call_friend_app
 
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin, DestroyModelMixin
 from rest_framework.response import Response
@@ -88,7 +89,7 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
                 else:
                     data = {"index": i, "message": "error", "error": serializer.errors}
                     results.append(data)
-            self.call_friend_app(results)
+            status, message = call_friend_app(list_data)
             return Response(results)
 
     def update(self, request, pk, *args, **kwargs):
@@ -118,11 +119,3 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
         else:
             data = {"message": "bulk not persent in url"}
             return Response(results)
-
-    def call_friend_app(self, data):
-        url = f"{aapoon_BASE_URL}/api/friends/check/"
-        headers = {}
-        result = requests.post(url, data=data, headers=headers)
-        if result.status_code == 200:
-            return 200, result.json()
-        return 400, result.text
