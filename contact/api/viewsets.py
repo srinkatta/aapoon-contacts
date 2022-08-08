@@ -32,7 +32,9 @@ class ContactViewSet(BulkCreateContactMixin, viewsets.ModelViewSet):
         ]
     )
     def list(self, request):
-        user_id = request.GET.get('userid', '')
+        user_id = request.GET.get("userid", "")
+        if not user_id:
+            return Response({"data": "userid required in params"})
         contacts = Contacts().list_contacts(user_id)
         return Response(contacts)
 
@@ -43,7 +45,7 @@ class ContactViewSet(BulkCreateContactMixin, viewsets.ModelViewSet):
         permission_classes=[
             permissions.AllowAny,
         ],
-        serializer_class=ContactDeleteSerializer,
+        serializer_class=ContactSerializer,
     )
     def bulk_delete(self, request, pk, *args, **kwargs):
         """
@@ -54,9 +56,7 @@ class ContactViewSet(BulkCreateContactMixin, viewsets.ModelViewSet):
             list_data = request.data
             for i, item in enumerate(list_data):
                 Contacts().delete_contact(
-                    item["userid"],
-                    item["contact_country_code"],
-                    item["contact_phone_number"],
+                    item,
                 )
                 data = {
                     "index": i,
