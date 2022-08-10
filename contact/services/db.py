@@ -1,6 +1,7 @@
 import uuid
 import boto3
 import threading
+from datetime import datetime
 
 from aapooncontact import settings
 from contact.helpers.utils import check_friend_status
@@ -32,20 +33,35 @@ class Contacts:
         )
         return
 
-    def get_contact(self, userid, country_code, phone_number):
+    def get_contact(self, data):
+        contact = data["contact"]
         response = self.table.scan(
-            FilterExpression="contact_country_code = :code AND contact_phone_number = :contact_phone_number AND userid = :userid",
+            FilterExpression="contact.contactCountryCode = :code AND contact.contactPhoneNumber = :ph AND userid = :userid",
             ExpressionAttributeValues={
-                ":code": f"{country_code}",
-                ":contact_phone_number": f"{phone_number}",
-                ":userid": f"{userid}",
+                ":code": f"{contact['contactCountryCode']}",
+                ":ph": f"{contact['contactPhoneNumber']}",
+                ":userid": f"{data['userid']}",
             },
         )
+
+        return response["Items"]
+
+    def get_contact_with_old_phone_details(self, data):
+        contact = data["contact"]
+        response = self.table.scan(
+            FilterExpression="contact.contactCountryCode = :code AND contact.contactPhoneNumber = :ph AND userid = :userid",
+            ExpressionAttributeValues={
+                ":code": f"{contact['contactOldCountryCode']}",
+                ":ph": f"{contact['contactOldPhoneNumber']}",
+                ":userid": f"{data['userid']}",
+            },
+        )
+
         return response["Items"]
 
     def list_contacts(self, user_id):
         response = self.table.scan(
-            FilterExpression="friend = :f AND userid = :uid",
+            FilterExpression="contact.aapoonUser = :f AND userid = :uid",
             ExpressionAttributeValues={
                 ":f": False,
                 ":uid": user_id,
@@ -57,48 +73,38 @@ class Contacts:
         """
         Adds a contact to the table.
         """
-        payload = {
-            "id": f"{uuid.uuid4()}",
-            "userid": data["userid"],
-            "contact_country_code": data["contact_country_code"],
-            "contact_phone_number": data["contact_phone_number"],
-            "device_contact_id": data["device_contact_id"],
-            "contact_name": data["contact_name"],
-            "friend": False,
-        }
+        data["id"] = f"{uuid.uuid4()}"
+        data["contact"]["aapoonUser"] = False
+        data["contact"]["contactCreated"] = f"{datetime.utcnow()}"
+        data["contact"]["contactUpdated"] = f"{datetime.utcnow()}"
         try:
-            self.table.put_item(Item=payload)
+            self.table.put_item(Item=data)
         except Exception as err:
             print(
-                "Couldn't add movie %s to table %s. Here's why: %s: %s",
-                data["contact_phone_number"],
+                "Couldn't add contact %s to table %s. Here's why: %s: %s",
+                data["contact"]["contactPhoneNumber"],
                 self.table.name,
                 err.response["Error"]["Code"],
                 err.response["Error"]["Message"],
             )
             raise
 
-    def update_contact(self, userid, country_code, phone_number, data):
+    def update_contact(self, data):
         """
-        Updates contact_name and device_contact_id data for a contact in the table.
-
-        :param userid: User id
-        :param contact_phone_number: Contact phone numner
-        :param device_contact_id: Contact Id from device
-        :param contact_name: Contact Name
-        :return: The fields that were updated, with their new values.
+        Updates contact data for a contact in the table.
         """
         try:
-            contact = self.get_contact(userid, country_code, phone_number)
+            contact = self.get_contact_with_old_phone_details(data)
             if contact:
+                contact_data = data["contact"]
                 response = self.table.update_item(
                     Key={"id": contact[0]["id"]},
-                    UpdateExpression="set device_contact_id = :cid, contact_name = :cname, contact_phone_number = :cph, contact_country_code = :code",
+                    UpdateExpression="set contact.contactId = :cid, contact.contactPhoneNumber = :cph, contact.contactCountryCode = :code, contact.contactUpdated = :updated",
                     ExpressionAttributeValues={
-                        ":cid": data["device_contact_id"],
-                        ":cname": data["contact_name"],
-                        ":cph": data["contact_phone_number"],
-                        ":code": data["contact_country_code"],
+                        ":cid": contact_data["contactId"],
+                        ":cph": contact_data["contactPhoneNumber"],
+                        ":code": contact_data["contactCountryCode"],
+                        ":updated": f"{datetime.utcnow()}",
                     },
                     ReturnValues="UPDATED_NEW",
                 )
@@ -113,29 +119,27 @@ class Contacts:
         else:
             return response["Attributes"]
 
-    def patch_contact(self, uid, data):
+    def update_contact_name(self, data):
         """
-        Updates contact_name and device_contact_id data for a contact in the table.
-
-        :param userid: User id
-        :param contact_phone_number: Contact phone numner
-        :param device_contact_id: Contact Id from device
-        :param contact_name: Contact Name
-        :return: The fields that were updated, with their new values.
+        Updates contact name for a contact in the table.
         """
         try:
-            response = self.table.update_item(
-                Key={"id": uid},
-                UpdateExpression="set friend = :f",
-                ExpressionAttributeValues={
-                    ":f": data["friend"],
-                },
-                ReturnValues="UPDATED_NEW",
-            )
+            contact = self.get_contact(data)
+            if contact:
+                contact_data = data["contact"]
+                response = self.table.update_item(
+                    Key={"id": contact[0]["id"]},
+                    UpdateExpression="set contact.contactName = :cname, contact.contactUpdated = :updated",
+                    ExpressionAttributeValues={
+                        ":cname": contact_data["contactName"],
+                        ":updated": f"{datetime.utcnow()}",
+                    },
+                    ReturnValues="UPDATED_NEW",
+                )
         except Exception as err:
             print(
                 "Couldn't update contact %s. Here's why: %s: %s",
-                uid,
+                userid,
                 err.response["Error"]["Code"],
                 err.response["Error"]["Message"],
             )
@@ -143,13 +147,12 @@ class Contacts:
         else:
             return response["Attributes"]
 
-    def delete_contact(self, userid, country_code, phone_number):
+    def delete_contact(self, data):
         """
         Deletes a contact from the table.
-
         """
         try:
-            contact = self.get_contact(userid, country_code, phone_number)
+            contact = self.get_contact(data)
             if contact:
                 self.table.delete_item(Key={"id": contact[0]["id"]})
         except Exception as err:
@@ -161,19 +164,3 @@ class Contacts:
                 err.response["Error"]["Message"],
             )
             raise
-
-    def __friend_check(self, payload):
-        uuid = payload["id"]
-        country_code = payload["contact_country_code"]
-        phone_number = payload["contact_phone_number"]
-        phone = f"{country_code}{phone_number}"
-        status, friend = check_friend_status(payload["contact_phone_number"])
-
-        data = {
-            "contact_phone_number": f"{payload['contact_phone_number']}",
-            "device_contact_id": f"{payload['device_contact_id']}",
-            "contact_name": f"{payload['contact_name']}",
-            "friend": friend,
-        }
-
-        return self.patch_contact(uuid, data)

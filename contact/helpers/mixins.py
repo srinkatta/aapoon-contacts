@@ -1,10 +1,11 @@
 import requests
 from contact.services.db import Contacts
+from contact.helpers.service import call_friend_app
 
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin, DestroyModelMixin
 from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
-from aapooncontact.settings import friend_BASE_URL
+from aapooncontact.settings import aapoon_BASE_URL
 
 
 class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
@@ -18,44 +19,44 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
         requests will use ``POST`` request method.
     """
 
-    def create_contact_at_dynamoDB(self, serializer):
-        data = {
-            "userid": f"{serializer.data['userid']}",
-            "device_contact_id": f"{serializer.data['device_contact_id']}",
-            "contact_name": f"{serializer.data['contact_name']}",
-            "contact_phone_number": f"{serializer.data['contact_phone_number']}",
-            "contact_country_code": f"{serializer.data['contact_country_code']}",
-        }
+    def create_contact_at_dynamoDB(self, data):
         return Contacts().add_contact(data)
 
-    def update_contact_at_dynamoDB(self, userid, country_code, phone_number, item):
-        data = {
-            "contact_country_code": f"{item['contact_country_code']}",
-            "contact_phone_number": f"{item['contact_phone_number']}",
-            "device_contact_id": f"{item['device_contact_id']}",
-            "contact_name": f"{item['contact_name']}",
-        }
-        return Contacts().update_contact(userid, country_code, phone_number, data)
+    def update_contact_at_dynamoDB(self, data):
+        return Contacts().update_contact(data)
+
+    def prepare_add_contact_data(self, data):
+        if "action" in data:
+            del data["action"]
+        if "contactOldCountryCode" in data["contact"]:
+            del data["contact"]["contactOldCountryCode"]
+        if "contactOldPhoneNumber" in data["contact"]:
+            del data["contact"]["contactOldPhoneNumber"]
+        return data
 
     def create(self, request, *args, **kwargs):
         bulk = isinstance(request.data, list)
         if not bulk:
             serializer = self.get_serializer(data=request.data)
             if serializer.is_valid():
-                try:
-                    self.update_contact_at_dynamoDB(
-                        serializer.data["userid"],
-                        serializer.data["contact_country_code"],
-                        serializer.data["contact_phone_number"],
-                        serializer.data,
-                    )
-                except Exception:
-                    self.create_contact_at_dynamoDB(serializer)
-                    data = {
-                        "data": serializer.data,
-                        "message": "Contact added successfully",
-                    }
-                    return Response(data)
+                data = {
+                    "index": i,
+                    "data": serializer.data,
+                }
+                if serializer.data["action"] == "UPDATE_PHONE":
+                    Contacts().update_contact(serializer.data)
+                    data["message"] = "Contact phone updated successfully"
+
+                elif serializer.data["action"] == "UPDATE_NAME":
+                    Contacts().update_contact_name(serializer.data)
+                    data["message"] = "Contact name updated successfully"
+
+                else:
+                    data = self.prepare_add_contact_data(serializer.data)
+                    Contacts().add_contact(data)
+                    data["message"] = "Contact added successfully"
+
+                return Response(data)
             else:
                 data = {
                     "data": serializer.errors,
@@ -70,25 +71,28 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
             for i, item in enumerate(list_data):
                 serializer = self.get_serializer(data=item)
                 if serializer.is_valid():
-                    try:
-                        self.update_contact_at_dynamoDB(
-                            serializer.data["userid"],
-                            serializer.data["contact_country_code"],
-                            serializer.data["contact_phone_number"],
-                            serializer.data,
-                        )
-                    except Exception:
-                        self.create_contact_at_dynamoDB(serializer)
-                        data = {
-                            "index": i,
-                            "data": serializer.data,
-                            "message": "Contact added successfully",
-                        }
-                        results.append(data)
+                    data = {
+                        "index": i,
+                        "data": serializer.data,
+                    }
+                    if serializer.data["action"] == "UPDATE_PHONE":
+                        Contacts().update_contact(serializer.data)
+                        data["message"] = "Contact phone updated successfully"
+
+                    elif serializer.data["action"] == "UPDATE_NAME":
+                        Contacts().update_contact_name(serializer.data)
+                        data["message"] = "Contact name updated successfully"
+
+                    else:
+                        data = self.prepare_add_contact_data(serializer.data)
+                        Contacts().add_contact(data)
+                        data["message"] = "Contact added successfully"
+
+                    results.append(data)
                 else:
                     data = {"index": i, "message": "error", "error": serializer.errors}
                     results.append(data)
-            self.call_friend_app(results)
+            status, message = call_friend_app(list_data)
             return Response(results)
 
     def update(self, request, pk, *args, **kwargs):
@@ -101,13 +105,11 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
             list_data = request.data
             results = []
             for i, item in enumerate(list_data):
+                if serializer.data["action"] == "UPDATE_PHONE":
+                    Contacts().update_contact(serializer.data)
+                elif serializer.data["action"] == "UPDATE_NAME":
+                    Contacts().update_contact_name(serializer.data)
 
-                self.update_contact_at_dynamoDB(
-                    item["userid"],
-                    item["contact_country_code"],
-                    item["contact_phone_number"],
-                    item,
-                )
                 data = {
                     "index": i,
                     "data": item,
@@ -118,11 +120,3 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
         else:
             data = {"message": "bulk not persent in url"}
             return Response(results)
-
-    def call_friend_app(self, data):
-        url = f"{friend_BASE_URL}/api/friends/check/"
-        headers = {}
-        result = requests.post(url, data=data, headers=headers)
-        if result.status_code == 200:
-            return 200, result.json()
-        return 400, result.text

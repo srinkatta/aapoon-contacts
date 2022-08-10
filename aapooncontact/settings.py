@@ -88,7 +88,6 @@ AWS_ACCESS_KEY_ID = "AKIA4YYA7W7DTVBUSCEI"
 AWS_SECRET_ACCESS_KEY = "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"
 TABLE_NAME = "aapoon-contacts"
 
-friend_BASE_URL = "https://friend.aapoon.com"
 aapoon_BASE_URL = "https://qa.aapoon.com"
 aapoon_API_KEY = "z5yPWvMB.qeCwhXse3vyImVV7BKNgRYR1X5ufzHen"
 
