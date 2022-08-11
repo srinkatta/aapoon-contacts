@@ -75,8 +75,8 @@ class Contacts:
         """
         data["id"] = f"{uuid.uuid4()}"
         data["contact"]["aapoonUser"] = False
-        data["contact"]["contactCreated"] = f"{datetime.utcnow()}"
-        data["contact"]["contactUpdated"] = f"{datetime.utcnow()}"
+        data["contact"]["contactCreated"] = int(datetime.utcnow().timestamp())
+        data["contact"]["contactUpdated"] = int(datetime.utcnow().timestamp())
         try:
             self.table.put_item(Item=data)
         except Exception as err:
@@ -104,7 +104,7 @@ class Contacts:
                         ":cid": contact_data["contactId"],
                         ":cph": contact_data["contactPhoneNumber"],
                         ":code": contact_data["contactCountryCode"],
-                        ":updated": f"{datetime.utcnow()}",
+                        ":updated": int(datetime.utcnow().timestamp()),
                     },
                     ReturnValues="UPDATED_NEW",
                 )
@@ -132,7 +132,7 @@ class Contacts:
                     UpdateExpression="set contact.contactName = :cname, contact.contactUpdated = :updated",
                     ExpressionAttributeValues={
                         ":cname": contact_data["contactName"],
-                        ":updated": f"{datetime.utcnow()}",
+                        ":updated": int(datetime.utcnow().timestamp()),
                     },
                     ReturnValues="UPDATED_NEW",
                 )

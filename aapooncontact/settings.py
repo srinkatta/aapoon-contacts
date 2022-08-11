@@ -88,8 +88,8 @@ AWS_ACCESS_KEY_ID = "AKIA4YYA7W7DTVBUSCEI"
 AWS_SECRET_ACCESS_KEY = "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"
 TABLE_NAME = "aapoon-contacts"
 
-aapoon_BASE_URL = "https://dev.aapoon.com"
-aapoon_API_KEY = "mRR1XqE7.42e0en8XObB3XhRsaqbpZgMJrwAB08mN"
+aapoon_BASE_URL = "https://qa.aapoon.com"
+aapoon_API_KEY = "z5yPWvMB.qeCwhXse3vyImVV7BKNgRYR1X5ufzHen"
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
