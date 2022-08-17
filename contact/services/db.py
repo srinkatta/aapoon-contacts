@@ -108,6 +108,7 @@ class Contacts:
                     },
                     ReturnValues="UPDATED_NEW",
                 )
+                return response["Attributes"]
         except Exception as err:
             print(
                 "Couldn't update contact %s. Here's why: %s: %s",
@@ -116,8 +117,6 @@ class Contacts:
                 err.response["Error"]["Message"],
             )
             raise
-        else:
-            return response["Attributes"]
 
     def update_contact_name(self, data):
         """
@@ -136,6 +135,8 @@ class Contacts:
                     },
                     ReturnValues="UPDATED_NEW",
                 )
+                return response["Attributes"]
+
         except Exception as err:
             print(
                 "Couldn't update contact %s. Here's why: %s: %s",
@@ -144,8 +145,6 @@ class Contacts:
                 err.response["Error"]["Message"],
             )
             raise
-        else:
-            return response["Attributes"]
 
     def delete_contact(self, data):
         """
