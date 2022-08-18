@@ -1,5 +1,6 @@
 import requests
 from contact.services.db import Contacts
+from contact.services.events import ContactsEvents
 from contact.helpers.service import call_friend_app
 
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin, DestroyModelMixin
@@ -92,7 +93,9 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
                 else:
                     data = {"index": i, "message": "error", "error": serializer.errors}
                     results.append(data)
-            status, message = call_friend_app(list_data)
+
+            # Add the payload to Event Bridge queue
+            ce = ContactsEvents().create_event(list_data)
             return Response(results)
 
     def update(self, request, pk, *args, **kwargs):
