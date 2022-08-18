@@ -105,10 +105,10 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
             list_data = request.data
             results = []
             for i, item in enumerate(list_data):
-                if serializer.data["action"] == "UPDATE_PHONE":
-                    Contacts().update_contact(serializer.data)
-                elif serializer.data["action"] == "UPDATE_NAME":
-                    Contacts().update_contact_name(serializer.data)
+                if item["action"] == "UPDATE_PHONE":
+                    Contacts().update_contact(item)
+                elif item["action"] == "UPDATE_NAME":
+                    Contacts().update_contact_name(item)
 
                 data = {
                     "index": i,
