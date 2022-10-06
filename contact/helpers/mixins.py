@@ -12,6 +12,23 @@ from contact.services.db import Contacts
 from contact.services.events import ContactsEvents
 
 
+class RosterUser(object):
+    def __init__(self, **kwargs):
+        for field in (
+            "id",
+            "username",
+            "jid",
+            "nick",
+            "subscription",
+            "ask",
+            "askmessage",
+            "server",
+            "subscribe",
+            "type",
+        ):
+            setattr(self, field, kwargs.get(field, None))
+
+
 class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
     """
     Either create a single or many model instances in bulk by using the
@@ -43,11 +60,15 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
         contact = row["contact"]
         phone_number = f"{contact['contactCountryCode']}{contact['contactPhoneNumber']}"
         jid = f"{phone_number}@{settings.XMPP_HOST}"
+
+        query = f"select * from rosterusers where username={phone_number} AND jid={jid}"
+        users = self.fetch_rosteruser(query, contact, phone_number, jid)
+
         value = (
             f"{phone_number}",
             f"{jid}",
             f"{contact['contactName']}",
-            "B",
+            "T",
             "N",
             "",
             "N",
@@ -55,6 +76,22 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
             "item",
         )
         return value
+
+    def fetch_rosteruser(self, query, contact, phone_number, jid):
+        with connections["xmpp"].cursor() as cursor:
+            response = cursor.execute(query)
+            user_data = cursor.fetchall()
+            user_data = sorted(user_data, key=lambda x: x[0])
+            users = [
+                RosterUser(id=user[0], timestamp=user[1], xml=user[2])
+                for user_data in user_data
+            ]
+            if users:
+                query = f"Update rosterusers set subscription = 'B', nick = {contact['contactName']} where  username ={phone_number} AND jid ={jid}"
+                self.execute_xmpp_query(query)
+            return users
+
+        return []
 
     def execute_xmpp_query(self, query):
         print(query)
