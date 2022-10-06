@@ -15,7 +15,6 @@ from contact.services.events import ContactsEvents
 class RosterUser(object):
     def __init__(self, **kwargs):
         for field in (
-            "id",
             "username",
             "jid",
             "nick",
@@ -61,7 +60,9 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
         phone_number = f"{contact['contactCountryCode']}{contact['contactPhoneNumber']}"
         jid = f"{phone_number}@{settings.XMPP_HOST}"
 
-        query = f"select * from rosterusers where username={phone_number} AND jid={jid}"
+        query = (
+            f"select * from rosterusers where username='{phone_number}' AND jid='{jid}'"
+        )
         users = self.fetch_rosteruser(query, contact, phone_number, jid)
 
         value = (
@@ -83,11 +84,11 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
             user_data = cursor.fetchall()
             user_data = sorted(user_data, key=lambda x: x[0])
             users = [
-                RosterUser(id=user[0], timestamp=user[1], xml=user[2])
-                for user_data in user_data
+                RosterUser(username=user[0], jid=user[1], nick=user[2])
+                for user in user_data
             ]
             if users:
-                query = f"Update rosterusers set subscription = 'B', nick = {contact['contactName']} where  username ={phone_number} AND jid ={jid}"
+                query = f"Update rosterusers set subscription = 'B', nick={contact['contactName']} where  username='{phone_number}' AND jid='{jid}'"
                 self.execute_xmpp_query(query)
             return users
 
