@@ -7,7 +7,7 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 
 from aapooncontact.settings import aapoon_BASE_URL
-from contact.helpers.service import call_friend_app
+from contact.helpers.utils import check_friend_status
 from contact.services.db import Contacts
 from contact.services.events import ContactsEvents
 
@@ -26,6 +26,12 @@ class RosterUser(object):
             "type",
         ):
             setattr(self, field, kwargs.get(field, None))
+
+    def __str__(self):
+        return f"RosterUser(username={str(self.username)} ,jid={self.jid}, nick={self.nick})"
+
+    def __repr__(self):
+        return f"RosterUser(username={str(self.username)} ,jid={self.jid}, nick={self.nick})"
 
 
 class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
@@ -57,39 +63,66 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
     def prepare_xmpp_query_value(self, row):
         self.fcm_token = row["UserFcmToken"]
         contact = row["contact"]
-        phone_number = f"{contact['contactCountryCode']}{contact['contactPhoneNumber']}"
-        jid = f"{phone_number}@{settings.XMPP_HOST}"
 
-        query = (
-            f"select * from rosterusers where username='{phone_number}' AND jid='{jid}'"
+        username = row["userid"]
+        user_jid = f"{username}@{settings.XMPP_HOST}"
+
+        contact_phone_number = (
+            f"{contact['contactCountryCode']}{contact['contactPhoneNumber']}"
         )
-        users = self.fetch_rosteruser(query, contact, phone_number, jid)
+        contact_jid = f"{contact_phone_number}@{settings.XMPP_HOST}"
+        nick = contact["contactName"]
+        contact_roster = {"username": username, "jid": contact_jid, "nick": nick}
 
-        value = (
-            f"{phone_number}",
-            f"{jid}",
-            f"{contact['contactName']}",
-            "T",
-            "N",
-            "",
-            "N",
-            "",
-            "item",
-        )
-        return value
+        query = f"select * from rosterusers where username='{username}'"
+        users = self.fetch_rosteruser(query)
 
-    def fetch_rosteruser(self, query, contact, phone_number, jid):
+        if contact_roster in users:
+            query = f"Update rosterusers set subscription = 'B', nick = '{nick}' where  username = '{username}' and jid = '{contact_jid}'"
+            self.execute_xmpp_query(query)
+            query = f"Update rosterusers set subscription = 'B' where  username = '{contact_phone_number}' and jid = '{user_jid}'"
+            self.execute_xmpp_query(query)
+        else:
+            status, response = check_friend_status(contact_phone_number)
+            askmessage = ""
+            if response["aapoonUser"]:
+                nick = f"{nick}-aapoon"
+                askmessage = "aapoon"
+
+            user_query = (
+                f"{username}",
+                f"{contact_jid}",
+                f"{nick}",
+                "T",
+                "N",
+                f"{askmessage}",
+                "N",
+                "",
+                "item",
+            )
+            roaster_query = (
+                f"{contact_phone_number}",
+                f"{user_jid}",
+                "",
+                "F",
+                "N",
+                f"{askmessage}",
+                "N",
+                "",
+                "item",
+            )
+            self.values.append(user_query)
+            self.values.append(roaster_query)
+
+    def fetch_rosteruser(self, query):
         with connections["xmpp"].cursor() as cursor:
             response = cursor.execute(query)
             user_data = cursor.fetchall()
             user_data = sorted(user_data, key=lambda x: x[0])
             users = [
-                RosterUser(username=user[0], jid=user[1], nick=user[2])
+                {"username": user[0], "jid": user[1], "nick": user[2]}
                 for user in user_data
             ]
-            if users:
-                query = f"Update rosterusers set subscription = 'B', nick={contact['contactName']} where  username='{phone_number}' AND jid='{jid}'"
-                self.execute_xmpp_query(query)
             return users
 
         return []
@@ -111,14 +144,13 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
         print(result)
 
     def create(self, request, *args, **kwargs):
-        values = []
+        self.values = []
         query = "INSERT INTO rosterusers (username, jid, nick, subscription, ask, askmessage, server, subscribe, type) VALUES "
         bulk = isinstance(request.data, list)
         if not bulk:
             serializer = self.get_serializer(data=request.data)
             if serializer.is_valid():
-                value = self.prepare_xmpp_query_value(serializer.data)
-                values = value
+                self.prepare_xmpp_query_value(serializer.data)
                 data = {
                     "data": serializer.data,
                 }
@@ -127,8 +159,12 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
                     "data": serializer.errors,
                     "message": "Error",
                 }
-            query = f"{query}{tuple(values)}"
-            self.execute_xmpp_query(query)
+
+            if self.values:
+                self.values = str(self.values).replace("[", "")
+                self.values = str(self.values).replace("]", "")
+                query = f"{query}{self.values}"
+                self.execute_xmpp_query(query)
             self.__trigger_notification()
             return Response(data)
         else:
@@ -139,9 +175,7 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
             for i, item in enumerate(list_data):
                 serializer = self.get_serializer(data=item)
                 if serializer.is_valid():
-                    print(serializer.data)
-                    value = self.prepare_xmpp_query_value(serializer.data)
-                    values.append(value)
+                    self.prepare_xmpp_query_value(serializer.data)
                     data = {
                         "index": i,
                         "data": serializer.data,
@@ -151,10 +185,11 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
                     data = {"index": i, "message": "error", "error": serializer.errors}
                     results.append(data)
 
-            values = str(values).replace("[", "")
-            values = str(values).replace("]", "")
-            query = f"{query}{values}"
-            self.execute_xmpp_query(query)
+            if self.values:
+                self.values = str(self.values).replace("[", "")
+                self.values = str(self.values).replace("]", "")
+                query = f"{query}{self.values}"
+                self.execute_xmpp_query(query)
             self.__trigger_notification()
             return Response(results)
 

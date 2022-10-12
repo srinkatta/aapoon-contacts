@@ -12,5 +12,5 @@ def check_friend_status(phone_number):
     headers = {"Authorization": f"Api-Key {aapoon_API_KEY}"}
     result = requests.post(url, data=payload, headers=headers)
     if result.status_code == 200:
-        return 200, result.json()["friend"]
+        return 200, result.json()
     return 400, result.text
