@@ -1,8 +1,9 @@
 import json
-import uuid
-import boto3
 import threading
+import uuid
 from datetime import datetime
+
+import boto3
 
 from aapooncontact import settings
 from contact.helpers.utils import check_friend_status

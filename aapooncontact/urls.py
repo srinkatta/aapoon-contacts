@@ -1,11 +1,11 @@
 """aapooncontact URL Configuration
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import include, path
 from drf_spectacular.views import (
-    SpectacularSwaggerView,
     SpectacularAPIView,
     SpectacularRedocView,
+    SpectacularSwaggerView,
 )
 
 from aapooncontact.router_urls import router_urlpatterns

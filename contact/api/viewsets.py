@@ -1,12 +1,12 @@
-from rest_framework import permissions, viewsets
-from rest_framework.response import Response
+from django.db import connections
+from drf_spectacular.utils import OpenApiParameter, extend_schema
+from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
+from rest_framework.response import Response
 
-from drf_spectacular.utils import extend_schema, OpenApiParameter
-
-from contact.models import Contact
-from contact.api.serializers import ContactSerializer, ContactDeleteSerializer
+from contact.api.serializers import ContactDeleteSerializer, ContactSerializer
 from contact.helpers.mixins import BulkCreateContactMixin
+from contact.models import Contact
 from contact.services.db import Contacts
 
 
