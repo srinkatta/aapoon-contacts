@@ -1,7 +1,8 @@
-import uuid
-import boto3
 import threading
+import uuid
 from datetime import datetime
+
+import boto3
 
 from aapooncontact import settings
 from contact.helpers.utils import check_friend_status
@@ -75,8 +76,8 @@ class Contacts:
         """
         data["id"] = f"{uuid.uuid4()}"
         data["contact"]["aapoonUser"] = False
-        data["contact"]["contactCreated"] = f"{datetime.utcnow()}"
-        data["contact"]["contactUpdated"] = f"{datetime.utcnow()}"
+        data["contact"]["contactCreated"] = int(datetime.utcnow().timestamp())
+        data["contact"]["contactUpdated"] = int(datetime.utcnow().timestamp())
         try:
             self.table.put_item(Item=data)
         except Exception as err:
@@ -104,10 +105,11 @@ class Contacts:
                         ":cid": contact_data["contactId"],
                         ":cph": contact_data["contactPhoneNumber"],
                         ":code": contact_data["contactCountryCode"],
-                        ":updated": f"{datetime.utcnow()}",
+                        ":updated": int(datetime.utcnow().timestamp()),
                     },
                     ReturnValues="UPDATED_NEW",
                 )
+                return response["Attributes"]
         except Exception as err:
             print(
                 "Couldn't update contact %s. Here's why: %s: %s",
@@ -116,8 +118,6 @@ class Contacts:
                 err.response["Error"]["Message"],
             )
             raise
-        else:
-            return response["Attributes"]
 
     def update_contact_name(self, data):
         """
@@ -132,10 +132,12 @@ class Contacts:
                     UpdateExpression="set contact.contactName = :cname, contact.contactUpdated = :updated",
                     ExpressionAttributeValues={
                         ":cname": contact_data["contactName"],
-                        ":updated": f"{datetime.utcnow()}",
+                        ":updated": int(datetime.utcnow().timestamp()),
                     },
                     ReturnValues="UPDATED_NEW",
                 )
+                return response["Attributes"]
+
         except Exception as err:
             print(
                 "Couldn't update contact %s. Here's why: %s: %s",
@@ -144,8 +146,6 @@ class Contacts:
                 err.response["Error"]["Message"],
             )
             raise
-        else:
-            return response["Attributes"]
 
     def delete_contact(self, data):
         """
