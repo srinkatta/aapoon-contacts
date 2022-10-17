@@ -62,57 +62,56 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
 
     def prepare_xmpp_query_value(self, row):
         self.fcm_token = row["UserFcmToken"]
-        contact = row["contact"]
-
+        contacts = row["contacts"]
         username = row["userid"]
         user_jid = f"{username}@{settings.XMPP_HOST}"
-
-        contact_phone_number = (
-            f"{contact['contactCountryCode']}{contact['contactPhoneNumber']}"
-        )
-        contact_jid = f"{contact_phone_number}@{settings.XMPP_HOST}"
-        nick = contact["contactName"]
-        contact_roster = {"username": username, "jid": contact_jid, "nick": nick}
-
         query = f"select * from rosterusers where username='{username}'"
         users = self.fetch_rosteruser(query)
 
-        if contact_roster in users:
-            query = f"Update rosterusers set subscription = 'B', nick = '{nick}' where  username = '{username}' and jid = '{contact_jid}'"
-            self.execute_xmpp_query(query)
-            query = f"Update rosterusers set subscription = 'B' where  username = '{contact_phone_number}' and jid = '{user_jid}'"
-            self.execute_xmpp_query(query)
-        else:
-            status, response = check_friend_status(contact_phone_number)
-            askmessage = ""
-            if response["aapoonUser"]:
-                nick = f"{nick}-aapoon"
-                askmessage = "aapoon"
+        for contact in contacts:
+            contact_phone_number = (
+                f"{contact['contactCountryCode']}{contact['contactPhoneNumber']}"
+            )
+            contact_jid = f"{contact_phone_number}@{settings.XMPP_HOST}"
+            nick = contact["contactName"]
+            contact_roster = {"username": username, "jid": contact_jid, "nick": nick}
 
-            user_query = (
-                f"{username}",
-                f"{contact_jid}",
-                f"{nick}",
-                "T",
-                "N",
-                f"{askmessage}",
-                "N",
-                "",
-                "item",
-            )
-            roaster_query = (
-                f"{contact_phone_number}",
-                f"{user_jid}",
-                "",
-                "F",
-                "N",
-                f"{askmessage}",
-                "N",
-                "",
-                "item",
-            )
-            self.values.append(user_query)
-            self.values.append(roaster_query)
+            if contact_roster in users:
+                query = f"Update rosterusers set subscription = 'B', nick = '{nick}' where  username = '{username}' and jid = '{contact_jid}'"
+                self.execute_xmpp_query(query)
+                query = f"Update rosterusers set subscription = 'B' where  username = '{contact_phone_number}' and jid = '{user_jid}'"
+                self.execute_xmpp_query(query)
+            else:
+                status, response = check_friend_status(contact_phone_number)
+                askmessage = ""
+                if response["aapoonUser"]:
+                    nick = f"{nick}-aapoon"
+                    askmessage = "aapoon"
+
+                user_query = (
+                    f"{username}",
+                    f"{contact_jid}",
+                    f"{nick}",
+                    "T",
+                    "N",
+                    f"{askmessage}",
+                    "N",
+                    "",
+                    "item",
+                )
+                roaster_query = (
+                    f"{contact_phone_number}",
+                    f"{user_jid}",
+                    "",
+                    "F",
+                    "N",
+                    f"{askmessage}",
+                    "N",
+                    "",
+                    "item",
+                )
+                self.values.append(user_query)
+                self.values.append(roaster_query)
 
     def fetch_rosteruser(self, query):
         with connections["xmpp"].cursor() as cursor:
