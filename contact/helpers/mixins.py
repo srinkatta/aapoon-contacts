@@ -74,7 +74,7 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
             )
             contact_jid = f"{contact_phone_number}@{settings.XMPP_HOST}"
             nick = contact["contactName"]
-            contact_roster = {"username": username, "jid": contact_jid, "nick": nick}
+            contact_roster = {"username": username, "jid": contact_jid}
 
             if contact_roster in users:
                 query = f"Update rosterusers set subscription = 'B', nick = '{nick}' where  username = '{username}' and jid = '{contact_jid}'"
@@ -119,7 +119,7 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
             user_data = cursor.fetchall()
             user_data = sorted(user_data, key=lambda x: x[0])
             users = [
-                {"username": user[0], "jid": user[1], "nick": user[2]}
+                {"username": user[0], "jid": user[1]}
                 for user in user_data
             ]
             return users
