@@ -87,10 +87,10 @@ DATABASES = {
     },
     "xmpp": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": os.environ.get("DATABASE_NAME", "xmpp"),
-        "USER": os.environ.get("DATABASE_USERNAME", "root"),
-        "PASSWORD": os.environ.get("DATABASE_PASSWORD", "test"),
-        "HOST": os.environ.get("DATABASE_HOST", "localhost"),
+        "NAME": os.environ.get("DATABASE_NAME", "ejabberd"),
+        "USER": os.environ.get("DATABASE_USERNAME", "postgres"),
+        "PASSWORD": os.environ.get("DATABASE_PASSWORD", "turpasfdqfbn&*$^#!456"),
+        "HOST": os.environ.get("DATABASE_HOST", "ejabberdqa.ckqgz6u3jrul.us-east-1.rds.amazonaws.com"),
         "PORT": os.environ.get("DATABASE_PORT", "5432"),
     },
 }
@@ -159,4 +159,4 @@ SPECTACULAR_SETTINGS = {
 }
 
 XMPP_HOST = os.environ.get("XMPP_HOST", "msgqa.aapoon.com")
-FCM_API_KEY = os.environ.get("FCM_API_KEY", "")
+FCM_API_KEY = os.environ.get("FCM_API_KEY", "AAAAf44LsVE:APA91bG7Zj1mX_VDBPILg57KYXVy9RizT28Js-Ibm9iZCzR0qwNIcTgqnlvyGbF6dJL5Ti6GGJLqXc1bUC6CEq8VurSJdASXaroPbwvs-rUeV8hK3E4ZJUFB39Pbu8ANIXr7b9-HR0BM")
