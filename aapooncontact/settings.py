@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "rest_framework_api_key",
     "drf_spectacular",
     # Custom App
     "contact",
@@ -87,11 +88,11 @@ DATABASES = {
     },
     "xmpp": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": os.environ.get("DATABASE_NAME", "xmpp"),
-        "USER": os.environ.get("DATABASE_USERNAME", "root"),
-        "PASSWORD": os.environ.get("DATABASE_PASSWORD", "test"),
-        "HOST": os.environ.get("DATABASE_HOST", "localhost"),
-        "PORT": os.environ.get("DATABASE_PORT", "5432"),
+        "NAME": "ejabberd",
+        "USER": "postgres",
+        "PASSWORD": "turpasfdqfbn&*$^#!456",
+        "HOST": "ejabberdqa.ckqgz6u3jrul.us-east-1.rds.amazonaws.com",
+        "PORT": "5432",
     },
 }
 
@@ -158,5 +159,5 @@ SPECTACULAR_SETTINGS = {
     "SERVE_INCLUDE_SCHEMA": False,
 }
 
-XMPP_HOST = os.environ.get("XMPP_HOST", "msgqa.aapoon.com")
-FCM_API_KEY = os.environ.get("FCM_API_KEY", "")
+XMPP_HOST = "msgqa.aapoon.com"
+FCM_API_KEY = "AAAAf44LsVE:APA91bG7Zj1mX_VDBPILg57KYXVy9RizT28Js-Ibm9iZCzR0qwNIcTgqnlvyGbF6dJL5Ti6GGJLqXc1bUC6CEq8VurSJdASXaroPbwvs-rUeV8hK3E4ZJUFB39Pbu8ANIXr7b9-HR0BM"

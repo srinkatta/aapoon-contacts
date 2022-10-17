@@ -3,6 +3,8 @@ from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework_api_key.permissions import HasAPIKey
+
 
 from contact.api.serializers import ContactDeleteSerializer, ContactSerializer
 from contact.helpers.mixins import BulkCreateContactMixin
@@ -18,7 +20,7 @@ class ContactViewSet(BulkCreateContactMixin, viewsets.ModelViewSet):
 
     queryset = Contact.objects.all()
     serializer_class = ContactSerializer
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.AllowAny, HasAPIKey)
     http_method_names = ("get", "post", "put")
 
     @extend_schema(
