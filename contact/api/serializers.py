@@ -20,7 +20,7 @@ class ContactDetailSerializer(serializers.Serializer):
 class ContactSerializer(serializers.Serializer):
     userid = serializers.CharField()
     UserFcmToken = serializers.CharField()
-    contact = ContactDetailSerializer()
+    contacts = ContactDetailSerializer(many=True)
 
 
 class ContactDeleteSerializer(serializers.Serializer):
