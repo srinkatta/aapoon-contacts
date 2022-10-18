@@ -9,7 +9,6 @@ from rest_framework.response import Response
 from aapooncontact.settings import aapoon_BASE_URL
 from contact.helpers.utils import check_friend_status
 from contact.services.db import Contacts
-from contact.services.events import ContactsEvents
 
 
 class RosterUser(object):
@@ -118,10 +117,7 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
             response = cursor.execute(query)
             user_data = cursor.fetchall()
             user_data = sorted(user_data, key=lambda x: x[0])
-            users = [
-                {"username": user[0], "jid": user[1]}
-                for user in user_data
-            ]
+            users = [{"username": user[0], "jid": user[1]} for user in user_data]
             return users
 
         return []
@@ -136,9 +132,7 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
         message_title = "Contact Sync complete"
         message_body = f"Hi there, contact sync was completed successfully"
         result = push_service.notify_single_device(
-            registration_id=self.fcm_token,
-            message_title=message_title,
-            message_body=message_body,
+            registration_id=self.fcm_token, message_body=message_body, low_priority=True
         )
         print(result)
 
