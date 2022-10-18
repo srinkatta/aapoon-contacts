@@ -130,9 +130,13 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
     def __trigger_notification(self):
         push_service = FCMNotification(api_key=settings.FCM_API_KEY)
         message_title = "Contact Sync complete"
+        data_message = {
+        "identifier": "ContactSync"    
+        "body" : "Hi there, contact sync was completed successfully",
+        }
         message_body = f"Hi there, contact sync was completed successfully"
         result = push_service.notify_single_device(
-            registration_id=self.fcm_token, message_body=message_body, low_priority=True
+            registration_id=self.fcm_token, data_message=data_message
         )
         print(result)
 
