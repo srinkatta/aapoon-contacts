@@ -39,11 +39,12 @@ class ContactsEvents:
                     {
                         "time": datetime.now(),
                         "source": "contacts.service",
-                        "detail-type": "ContactsSyncEvent",
+                        "detailType": "ContactsSyncEvent",
                         "detail": json.dumps(data),
                     },
                 ],
             )
+            print(Entries)
             print(response)
         except Exception as err:
             print(
