@@ -5,11 +5,11 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework_api_key.permissions import HasAPIKey
 
-
 from contact.api.serializers import ContactDeleteSerializer, ContactSerializer
 from contact.helpers.mixins import BulkCreateContactMixin
 from contact.models import Contact
 from contact.services.db import Contacts
+from contact.services.events import ContactsEvents
 
 
 class ContactViewSet(BulkCreateContactMixin, viewsets.ModelViewSet):
@@ -70,3 +70,22 @@ class ContactViewSet(BulkCreateContactMixin, viewsets.ModelViewSet):
         else:
             data = {"message": "bulk not persent in url"}
             return Response(results)
+
+    @action(
+        detail=False,
+        methods=["post"],
+        url_path=r"queue",
+        permission_classes=[permissions.AllowAny, HasAPIKey],
+        serializer_class=ContactSerializer,
+    )
+    def contacts_queue(self, request, *args, **kwargs):
+        """
+        Add contacts payload to queue
+        """
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        ContactsEvents().create_event(serializer.data)
+        return Response(
+            {"data": "Contacts added to queue successfully."},
+            status=status.HTTP_200_OK,
+        )

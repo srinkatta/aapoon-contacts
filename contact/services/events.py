@@ -32,7 +32,6 @@ class ContactsEvents:
         """
         Create an event in Event Bridge
         """
-
         try:
             response = self.client.put_events(
                 Entries=[
