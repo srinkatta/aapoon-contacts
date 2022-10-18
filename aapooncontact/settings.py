@@ -96,8 +96,8 @@ DATABASES = {
     },
 }
 
-AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID", "")
-AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY", "")
+AWS_ACCESS_KEY_ID = "AKIA4YYA7W7DTVBUSCEI"
+AWS_SECRET_ACCESS_KEY = "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"
 TABLE_NAME = os.environ.get("TABLE_NAME", "")
 
 aapoon_BASE_URL = os.environ.get("aapoon_BASE_URL", "https://qa.aapoon.com")
