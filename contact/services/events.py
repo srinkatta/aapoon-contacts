@@ -37,10 +37,10 @@ class ContactsEvents:
             response = self.client.put_events(
                 Entries=[
                     {
-                        "Time": datetime.now(),
-                        "Source": "contacts.service",
-                        "DetailType": "ContactsSyncEvent",
-                        "Detail": json.dumps(data),
+                        "time": datetime.now(),
+                        "source": "contacts.service",
+                        "detail-type": "ContactsSyncEvent",
+                        "detail": json.dumps(data),
                     },
                 ],
             )
