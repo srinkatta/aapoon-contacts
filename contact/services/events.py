@@ -44,6 +44,7 @@ class ContactsEvents:
                     },
                 ],
             )
+            print(response)
         except Exception as err:
             print(
                 "Couldn't add event to events. Here's why: %s: %s",
