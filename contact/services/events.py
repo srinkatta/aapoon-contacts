@@ -33,6 +33,7 @@ class ContactsEvents:
         Create an event in Event Bridge
         """
         try:
+            print("Event Creation")
             response = self.client.put_events(
                 Entries=[
                     {
