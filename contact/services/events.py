@@ -34,6 +34,7 @@ class ContactsEvents:
         """
         try:
             print("Event Creation")
+            print(data)
             fmt = "%Y-%m-%dT%H:%M:%SZ"
             response = self.client.put_events(
                 Entries=[
