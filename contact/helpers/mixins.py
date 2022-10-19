@@ -141,6 +141,8 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
     def create(self, request, *args, **kwargs):
         self.values = []
         query = "INSERT INTO rosterusers (username, jid, nick, subscription, ask, askmessage, server, subscribe, type) VALUES "
+        print("Event trigger to the Contact API")
+        print(request.data)
         bulk = isinstance(request.data, list)
         if not bulk:
             serializer = self.get_serializer(data=request.data)
