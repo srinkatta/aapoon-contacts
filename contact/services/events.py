@@ -34,17 +34,18 @@ class ContactsEvents:
         """
         try:
             print("Event Creation")
+            fmt = "%Y-%m-%dT%H:%M:%SZ"
             response = self.client.put_events(
                 Entries=[
                     {
-                        "time": datetime.now(),
-                        "source": "contacts.service",
-                        "detailType": "ContactsSyncEvent",
-                        "detail": json.dumps(data),
-                    },
+                        "EventBusName": "aapoon-msngr-event-bus",
+                        "Time": str(datetime.utcnow().strftime(fmt)),
+                        "Source": "contacts.service",
+                        "DetailType": "ContactsSyncEvent",
+                        "Detail": json.dumps(data),
+                    }
                 ],
             )
-            print(Entries)
             print(response)
         except Exception as err:
             print(

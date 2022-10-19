@@ -13,7 +13,6 @@ ACTIONS = [
 
 class ContactDetailSerializer(serializers.Serializer):
     contactName = serializers.CharField()
-    contactCountryCode = serializers.CharField()
     contactPhoneNumber = serializers.CharField()
 
 

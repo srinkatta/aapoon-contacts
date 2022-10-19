@@ -68,9 +68,7 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
         users = self.fetch_rosteruser(query)
 
         for contact in contacts:
-            contact_phone_number = (
-                f"{contact['contactCountryCode']}{contact['contactPhoneNumber']}"
-            )
+            contact_phone_number = contact['contactPhoneNumber']
             contact_jid = f"{contact_phone_number}@{settings.XMPP_HOST}"
             nick = contact["contactName"]
             contact_roster = {"username": username, "jid": contact_jid}
