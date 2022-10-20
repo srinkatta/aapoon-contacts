@@ -20,7 +20,7 @@ class ContactViewSet(BulkCreateContactMixin, viewsets.ModelViewSet):
 
     queryset = Contact.objects.all()
     serializer_class = ContactSerializer
-    permission_classes = (permissions.AllowAny)
+    permission_classes = (permissions.AllowAny, )
     http_method_names = ("get", "post", "put")
 
     @extend_schema(
