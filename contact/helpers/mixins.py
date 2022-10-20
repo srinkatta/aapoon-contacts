@@ -60,6 +60,7 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
         return data
 
     def prepare_xmpp_query_value(self, row):
+        print("Process Initiated")
         self.fcm_token = row["UserFcmToken"]
         contacts = row["contacts"]
         username = row["userid"]
@@ -74,14 +75,17 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
             contact_roster = {"username": username, "jid": contact_jid}
 
             if contact_roster in users:
+                print("updating roasters")
                 query = f"Update rosterusers set subscription = 'B', nick = '{nick}' where  username = '{username}' and jid = '{contact_jid}'"
                 self.execute_xmpp_query(query)
                 query = f"Update rosterusers set subscription = 'B' where  username = '{contact_phone_number}' and jid = '{user_jid}'"
                 self.execute_xmpp_query(query)
             else:
+                print("adding new roasters")
                 status, response = check_friend_status(contact_phone_number)
                 askmessage = ""
                 if response["aapoonUser"]:
+                    print(f"aapoon user:  {response["aapoonUser"]}")
                     nick = f"{nick}-aapoon"
                     askmessage = "aapoon"
 
@@ -111,6 +115,7 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
                 self.values.append(roaster_query)
 
     def fetch_rosteruser(self, query):
+        print("fetch roasters")
         with connections["xmpp"].cursor() as cursor:
             response = cursor.execute(query)
             user_data = cursor.fetchall()
