@@ -68,7 +68,7 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
         users = self.fetch_rosteruser(query)
 
         for contact in contacts:
-            contact_phone_number = contact['contactPhoneNumber']
+            contact_phone_number = contact["contactPhoneNumber"]
             contact_jid = f"{contact_phone_number}@{settings.XMPP_HOST}"
             nick = contact["contactName"]
             contact_roster = {"username": username, "jid": contact_jid}
@@ -133,8 +133,8 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
         push_service = FCMNotification(api_key=settings.FCM_API_KEY)
         message_title = "Contact Sync complete"
         data_message = {
-        "identifier": "ContactSync",
-        "body" : "Hi there, contact sync was completed successfully"
+            "identifier": "ContactSync",
+            "body": "Hi there, contact sync was completed successfully",
         }
         message_body = f"Hi there, contact sync was completed successfully"
         result = push_service.notify_single_device(
@@ -149,7 +149,8 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
         print(request.data)
         bulk = isinstance(request.data, list)
         if not bulk:
-            serializer = self.get_serializer(data=request.data)
+            detail = request.data["detail"]
+            serializer = self.get_serializer(data=detail)
             if serializer.is_valid():
                 self.prepare_xmpp_query_value(serializer.data)
                 data = {
@@ -166,7 +167,7 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
                 self.values = str(self.values).replace("]", "")
                 query = f"{query}{self.values}"
                 self.execute_xmpp_query(query)
-            self.__trigger_notification(request.data['UserFcmToken'])
+            self.__trigger_notification(detail["UserFcmToken"])
             return Response(data)
         else:
             self.renderer_classes = (JSONRenderer,)
@@ -175,9 +176,10 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
             fcm_token = None
             results = []
             for i, item in enumerate(list_data):
-                serializer = self.get_serializer(data=item)
-                fcm_token = item['UserFcmToken']
+                detail = item["detail"]
+                serializer = self.get_serializer(data=detail)
                 if serializer.is_valid():
+                    fcm_token = serializer.data["UserFcmToken"]
                     self.prepare_xmpp_query_value(serializer.data)
                     data = {
                         "index": i,
@@ -187,7 +189,6 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
                 else:
                     data = {"index": i, "message": "error", "error": serializer.errors}
                     results.append(data)
-
 
             if self.values:
                 self.values = str(self.values).replace("[", "")
