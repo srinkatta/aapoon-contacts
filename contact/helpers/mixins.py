@@ -84,8 +84,8 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
                 print("adding new roasters")
                 status, response = check_friend_status(contact_phone_number)
                 askmessage = ""
+                print(f"response: {response}")
                 if response["aapoonUser"]:
-                    print(f"aapoon user:  {response["aapoonUser"]}")
                     nick = f"{nick}-aapoon"
                     askmessage = "aapoon"
 
