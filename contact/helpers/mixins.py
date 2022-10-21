@@ -134,8 +134,12 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
         message_title = "Contact Sync complete"
         data_message = {
             "identifier": "ContactSync",
-            "body": "Hi there, contact sync was completed successfully",
+            "to": fcm_token,
+            "priority": "low",
+            "content_available": True
+            
         }
+        print(data_message)
         message_body = f"Hi there, contact sync was completed successfully"
         result = push_service.notify_single_device(
             registration_id=fcm_token, data_message=data_message
