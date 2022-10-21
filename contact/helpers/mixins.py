@@ -135,8 +135,8 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
         data_message = {
             "contactid": "Contact Sync",
             "notification": {
-                    "sound": "default"
-                    "body": f"Hi there, contact sync was completed successfully"
+                    "sound": "default",
+                    "body": "Hi there, contact sync was completed successfully"
             },
             "to": fcm_token,
             "priority": "high",
