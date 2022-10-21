@@ -12,7 +12,7 @@ ACTIONS = [
 
 
 class ContactDetailSerializer(serializers.Serializer):
-    contactName = serializers.CharField()
+    contactName = serializers.CharField(required=False)
     contactPhoneNumber = serializers.CharField()
 
 
