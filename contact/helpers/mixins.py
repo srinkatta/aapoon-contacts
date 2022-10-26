@@ -157,7 +157,10 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
         print(request.data)
         bulk = isinstance(request.data, list)
         if not bulk:
-            detail = request.data["detail"]
+            detail = request.data.get('detail', None)
+            if not detail:
+                print(f"payload: {request.data}")
+                return Response({'data': 'Payload not correct'}, status=400)
             serializer = self.get_serializer(data=detail)
             if serializer.is_valid():
                 self.prepare_xmpp_query_value(serializer.data)
@@ -184,7 +187,10 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
             fcm_token = None
             results = []
             for i, item in enumerate(list_data):
-                detail = item["detail"]
+                detail = item.get('detail', None)
+                if not detail:
+                    print(f"payload at index {i}: {item}")
+                    return Response({'data': 'Payload not correct'}, status=400)
                 serializer = self.get_serializer(data=detail)
                 if serializer.is_valid():
                     fcm_token = serializer.data["UserFcmToken"]
