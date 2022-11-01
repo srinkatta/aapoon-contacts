@@ -118,6 +118,7 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
         with connections["xmpp"].cursor() as cursor:
             response = cursor.execute(query)
             user_data = cursor.fetchall()
+            cursor.close()
             user_data = sorted(user_data, key=lambda x: x[0])
             users = [{"username": user[0], "jid": user[1]} for user in user_data]
             return users
@@ -128,6 +129,7 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
         print(query)
         with connections["xmpp"].cursor() as cursor:
             cursor.execute(query)
+            cursor.close()
 
     def __trigger_notification(self, fcm_token):
         push_service = FCMNotification(api_key=settings.FCM_API_KEY)
