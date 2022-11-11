@@ -20,7 +20,7 @@ class ContactViewSet(BulkCreateContactMixin, viewsets.ModelViewSet):
 
     queryset = Contact.objects.all()
     serializer_class = ContactSerializer
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.AllowAny, HasAPIKey)
     http_method_names = ("get", "post", "put")
 
     @extend_schema(
@@ -75,7 +75,7 @@ class ContactViewSet(BulkCreateContactMixin, viewsets.ModelViewSet):
         detail=False,
         methods=["post"],
         url_path=r"queue",
-        permission_classes=[permissions.AllowAny],
+        permission_classes=[permissions.AllowAny, HasAPIKey],
         serializer_class=ContactSerializer,
     )
     def contacts_queue(self, request, *args, **kwargs):
