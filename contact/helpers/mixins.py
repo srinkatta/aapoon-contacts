@@ -206,6 +206,7 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
                     results.append(data)
 
             if self.values:
+                self.values = list(set(self.values))
                 self.values = str(self.values).replace("[", "")
                 self.values = str(self.values).replace("]", "")
                 query = f"{query}{self.values}"
