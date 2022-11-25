@@ -120,6 +120,7 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
             cursor.close()
             user_data = sorted(user_data, key=lambda x: x[0])
             users = [{"username": user[0], "jid": user[1]} for user in user_data]
+            print("fetch roasters: ", users)
             return users
 
         return []
