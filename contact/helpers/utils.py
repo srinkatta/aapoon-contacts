@@ -3,9 +3,9 @@ import requests
 from aapooncontact.settings import aapoon_API_KEY, aapoon_BASE_URL
 
 
-def check_friend_status(phone_number):
+def check_friend_status(contacts):
     payload = {
-        "phone_number": phone_number,
+        "contacts": contacts,
     }
     url = f"{aapoon_BASE_URL}/api/v1/user/check/"
 
