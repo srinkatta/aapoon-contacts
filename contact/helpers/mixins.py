@@ -66,8 +66,9 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
         user_jid = f"{username}@{settings.XMPP_HOST}"
         query = f"select * from rosterusers where username='{username}'"
         users = self.fetch_rosteruser(query)
+        status, aapoon_contacts = check_friend_status(contacts)
 
-        for contact in contacts:
+        for contact in aapoon_contacts:
             contact_phone_number = contact["contactPhoneNumber"]
             contact_jid = f"{contact_phone_number}@{settings.XMPP_HOST}"
             nick = contact["contactName"]
@@ -81,10 +82,8 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
                 self.execute_xmpp_query(query)
             else:
                 print("adding new roasters")
-                status, response = check_friend_status(contact_phone_number)
                 askmessage = ""
-                print(f"response: {response}")
-                if response["aapoonUser"]:
+                if contact["aapoonUser"]:
                     nick = f"{nick}-aapoon"
                     askmessage = "aapoon"
 
