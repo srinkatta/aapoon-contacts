@@ -101,7 +101,7 @@ AWS_SECRET_ACCESS_KEY = "HKYE0mGced5woAeJc/vOj4bfZh5LUWsY/9AknPgG"
 TABLE_NAME = os.environ.get("TABLE_NAME", "")
 
 aapoon_BASE_URL = os.environ.get("aapoon_BASE_URL", "https://go.aapoon.com")
-aapoon_API_KEY = "PZqDUtTw.cwjuH7pyPS4frfY8fwfYxP5fvwaTX5Em"
+aapoon_API_KEY = "2qUJUYid.Uh95xvEggYfa0lJX6XrJsLuodCbdFEAL"
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
