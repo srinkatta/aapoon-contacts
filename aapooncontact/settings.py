@@ -102,7 +102,6 @@ TABLE_NAME = os.environ.get("TABLE_NAME", "")
 
 aapoon_BASE_URL = os.environ.get("aapoon_BASE_URL", "https://go.aapoon.com")
 aapoon_API_KEY = "PZqDUtTw.cwjuH7pyPS4frfY8fwfYxP5fvwaTX5Em"
-)
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
