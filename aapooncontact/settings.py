@@ -23,10 +23,10 @@ load_dotenv()  # take environment variables from .env.
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY", "**********")
+SECRET_KEY = "z5yPWvMBqeCwhXse3vyImVV7BKNgRYR1X5ufzHen"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DEBUG", True)
+DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
@@ -91,7 +91,7 @@ DATABASES = {
         "NAME": "ejabberd",
         "USER": "postgres",
         "PASSWORD": "turpasfdqfbn&*$^#!456",
-        "HOST": "ejabberdqa.ckqgz6u3jrul.us-east-1.rds.amazonaws.com",
+        "HOST": "aapoonejabberd.cybvjfglqtyj.ap-south-1.rds.amazonaws.com",
         "PORT": "5432",
     },
 }
@@ -100,9 +100,8 @@ AWS_ACCESS_KEY_ID = "AKIA4YYA7W7DTVBUSCEI"
 AWS_SECRET_ACCESS_KEY = "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"
 TABLE_NAME = os.environ.get("TABLE_NAME", "")
 
-aapoon_BASE_URL = os.environ.get("aapoon_BASE_URL", "https://qa.aapoon.com")
-aapoon_API_KEY = os.environ.get(
-    "aapoon_API_KEY", "z5yPWvMB.qeCwhXse3vyImVV7BKNgRYR1X5ufzHen"
+aapoon_BASE_URL = os.environ.get("aapoon_BASE_URL", "https://go.aapoon.com")
+aapoon_API_KEY = "PZqDUtTw.cwjuH7pyPS4frfY8fwfYxP5fvwaTX5Em"
 )
 
 # Password validation
@@ -159,5 +158,5 @@ SPECTACULAR_SETTINGS = {
     "SERVE_INCLUDE_SCHEMA": False,
 }
 
-XMPP_HOST = "msgqa.aapoon.com"
+XMPP_HOST = "msg.aapoon.com"
 FCM_API_KEY = "AAAAf44LsVE:APA91bG7Zj1mX_VDBPILg57KYXVy9RizT28Js-Ibm9iZCzR0qwNIcTgqnlvyGbF6dJL5Ti6GGJLqXc1bUC6CEq8VurSJdASXaroPbwvs-rUeV8hK3E4ZJUFB39Pbu8ANIXr7b9-HR0BM"
