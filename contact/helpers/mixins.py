@@ -179,6 +179,7 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
                 self.values = str(self.values).replace("[", "")
                 self.values = str(self.values).replace("]", "")
                 query = f"{query}{self.values}"
+                query = f"{query} ON CONFLICT (username, jid) DO NOTHING"
                 self.execute_xmpp_query(query)
             self.__trigger_notification(detail["UserFcmToken"])
             return Response(data)
