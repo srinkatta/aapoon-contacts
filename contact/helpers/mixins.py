@@ -81,7 +81,7 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
 
             if contact_roster in users:
                 print("updating roasters")
-                query = f"Update rosterusers set subscription = 'B', nick = '{nick}' and askmessage='{askmessage}' where  username = '{username}' and jid = '{contact_jid}'"
+                query = f"Update rosterusers set subscription = 'B', nick = '{nick}', askmessage='{askmessage}' where  username = '{username}' and jid = '{contact_jid}'"
                 self.execute_xmpp_query(query)
                 query = f"Update rosterusers set subscription = 'B' where  username = '{contact_phone_number}' and jid = '{user_jid}'"
                 self.execute_xmpp_query(query)
