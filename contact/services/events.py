@@ -40,7 +40,7 @@ class ContactsEvents:
                 Entries=[
                     {
                         "EventBusName": "aapoon-msngr-event-bus",
-                        "Time": str(datetime.utcnow().strftime(fmt)),
+                        "Time": str(datetime.datetime.now().strftime(fmt)),
                         "Source": "contacts.service",
                         "DetailType": "ContactsSyncEvent",
                         "Detail": json.dumps(data),

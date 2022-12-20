@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os
 from pathlib import Path
 
+import json
 from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -22,13 +23,31 @@ load_dotenv()  # take environment variables from .env.
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY", "**********")
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG", True)
 
 ALLOWED_HOSTS = ["*"]
+
+# Database
+# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
+
+with open(r"C:\Users\aapoon\Documents\aapoon-contacts\local.json") as f:
+    env = json.load(f)
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+    },
+    "xmpp": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": env["XMPP_DB_NAME"],
+        "USER": env["XMPP_DB_USERNAME"],
+        "PASSWORD": env["XMPP_DB_PASSWORD"],
+        "HOST": env["XMPP_DB_HOST"],
+        "PORT": "5432",
+    },
+}
 
 
 # Application definition
@@ -77,33 +96,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "aapooncontact.wsgi.application"
 
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = env["SECRET_KEY"]
 
-# Database
-# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    },
-    "xmpp": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "ejabberd",
-        "USER": "postgres",
-        "PASSWORD": "turpasfdqfbn&*$^#!456",
-        "HOST": "ejabberdqa.ckqgz6u3jrul.us-east-1.rds.amazonaws.com",
-        "PORT": "5432",
-    },
-}
-
-AWS_ACCESS_KEY_ID = "AKIA4YYA7W7DTVBUSCEI"
-AWS_SECRET_ACCESS_KEY = "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"
+AWS_ACCESS_KEY_ID = env["AWS_ACCESS_KEY_ID"]
+AWS_SECRET_ACCESS_KEY = env["AWS_SECRET_ACCESS_KEY"]
 TABLE_NAME = os.environ.get("TABLE_NAME", "")
 
-aapoon_BASE_URL = os.environ.get("aapoon_BASE_URL", "https://qa.aapoon.com")
-aapoon_API_KEY = os.environ.get(
-    "aapoon_API_KEY", "z5yPWvMB.qeCwhXse3vyImVV7BKNgRYR1X5ufzHen"
-)
+aapoon_BASE_URL = os.environ.get("aapoon_BASE_URL", env["aapoon_BASE_URL"])
+aapoon_API_KEY = os.environ.get("aapoon_API_KEY", env["aapoon_API_KEY"])
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -159,5 +160,5 @@ SPECTACULAR_SETTINGS = {
     "SERVE_INCLUDE_SCHEMA": False,
 }
 
-XMPP_HOST = "msgqa.aapoon.com"
-FCM_API_KEY = "AAAAf44LsVE:APA91bG7Zj1mX_VDBPILg57KYXVy9RizT28Js-Ibm9iZCzR0qwNIcTgqnlvyGbF6dJL5Ti6GGJLqXc1bUC6CEq8VurSJdASXaroPbwvs-rUeV8hK3E4ZJUFB39Pbu8ANIXr7b9-HR0BM"
+XMPP_HOST = env["XMPP_HOST"]
+FCM_API_KEY = env["FCM_API_KEY"]
