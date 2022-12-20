@@ -76,12 +76,8 @@ class Contacts:
         """
         data["id"] = f"{uuid.uuid4()}"
         data["contact"]["aapoonUser"] = False
-        data["contact"]["contactCreated"] = str(
-            datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
-        )
-        data["contact"]["contactUpdated"] = str(
-            datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
-        )
+        data["contact"]["contactCreated"] = str(datetime.now(tz=timezone.utc))
+        data["contact"]["contactUpdated"] = str(datetime.now(tz=timezone.utc))
         try:
             self.table.put_item(Item=data)
         except Exception as err:
@@ -109,9 +105,7 @@ class Contacts:
                         ":cid": contact_data["contactId"],
                         ":cph": contact_data["contactPhoneNumber"],
                         ":code": contact_data["contactCountryCode"],
-                        ":updated": str(
-                            datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
-                        ),
+                        ":updated": str(datetime.now(tz=timezone.utc)),
                     },
                     ReturnValues="UPDATED_NEW",
                 )
@@ -138,9 +132,7 @@ class Contacts:
                     UpdateExpression="set contact.contactName = :cname, contact.contactUpdated = :updated",
                     ExpressionAttributeValues={
                         ":cname": contact_data["contactName"],
-                        ":updated": str(
-                            datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
-                        ),
+                        ":updated": str(datetime.now(tz=timezone.utc)),
                     },
                     ReturnValues="UPDATED_NEW",
                 )
