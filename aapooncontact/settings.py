@@ -31,8 +31,7 @@ ALLOWED_HOSTS = ["*"]
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-with open(r"C:\Users\aapoon\Documents\aapoon-contacts\local.json") as f:
-    env = json.load(f)
+env = os.environ
 
 DATABASES = {
     "default": {
