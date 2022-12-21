@@ -23,15 +23,15 @@ load_dotenv()  # take environment variables from .env.
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
+env = os.environ
+
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DEBUG", True)
+DEBUG = env["DEBUG"]
 
 ALLOWED_HOSTS = ["*"]
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-
-env = os.environ
 
 DATABASES = {
     "default": {
@@ -102,8 +102,8 @@ AWS_ACCESS_KEY_ID = env["AWS_ACCESS_KEY_ID"]
 AWS_SECRET_ACCESS_KEY = env["AWS_SECRET_ACCESS_KEY"]
 TABLE_NAME = os.environ.get("TABLE_NAME", "")
 
-aapoon_BASE_URL = os.environ.get("aapoon_BASE_URL", env["aapoon_BASE_URL"])
-aapoon_API_KEY = os.environ.get("aapoon_API_KEY", env["aapoon_API_KEY"])
+aapoon_BASE_URL = env["aapoon_BASE_URL"]
+aapoon_API_KEY = env["aapoon_API_KEY"]
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
