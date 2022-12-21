@@ -44,8 +44,15 @@ class Contacts:
                 ":userid": f"{data['userid']}",
             },
         )
+        table_items = response["Items"]
+        # keeps requesting until no more requests are needed.
+        if not response["IsTruncated"]:
+            return table_items
 
-        return response["Items"]
+        next_response = self.get_contact(data)
+        table_items += next_response
+
+        return table_items
 
     def get_contact_with_old_phone_details(self, data):
         contact = data["contact"]
