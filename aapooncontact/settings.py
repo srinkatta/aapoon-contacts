@@ -100,7 +100,7 @@ SECRET_KEY = env["SECRET_KEY"]
 
 AWS_ACCESS_KEY_ID = env["AWS_ACCESS_KEY_ID"]
 AWS_SECRET_ACCESS_KEY = env["AWS_SECRET_ACCESS_KEY"]
-TABLE_NAME = os.environ.get("TABLE_NAME", "")
+#TABLE_NAME = os.environ.get("TABLE_NAME", "")
 
 aapoon_BASE_URL = env["aapoon_BASE_URL"]
 aapoon_API_KEY = env["aapoon_API_KEY"]
