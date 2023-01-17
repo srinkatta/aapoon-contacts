@@ -44,8 +44,15 @@ class Contacts:
                 ":userid": f"{data['userid']}",
             },
         )
+        table_items = response["Items"]
+        # keeps requesting until no more requests are needed.
+        if not response["IsTruncated"]:
+            return table_items
 
-        return response["Items"]
+        next_response = self.get_contact(data)
+        table_items += next_response
+
+        return table_items
 
     def get_contact_with_old_phone_details(self, data):
         contact = data["contact"]
@@ -76,8 +83,8 @@ class Contacts:
         """
         data["id"] = f"{uuid.uuid4()}"
         data["contact"]["aapoonUser"] = False
-        data["contact"]["contactCreated"] = int(datetime.utcnow().timestamp())
-        data["contact"]["contactUpdated"] = int(datetime.utcnow().timestamp())
+        data["contact"]["contactCreated"] = str(datetime.now(tz=timezone.utc))
+        data["contact"]["contactUpdated"] = str(datetime.now(tz=timezone.utc))
         try:
             self.table.put_item(Item=data)
         except Exception as err:
@@ -105,7 +112,7 @@ class Contacts:
                         ":cid": contact_data["contactId"],
                         ":cph": contact_data["contactPhoneNumber"],
                         ":code": contact_data["contactCountryCode"],
-                        ":updated": int(datetime.utcnow().timestamp()),
+                        ":updated": str(datetime.now(tz=timezone.utc)),
                     },
                     ReturnValues="UPDATED_NEW",
                 )
@@ -132,7 +139,7 @@ class Contacts:
                     UpdateExpression="set contact.contactName = :cname, contact.contactUpdated = :updated",
                     ExpressionAttributeValues={
                         ":cname": contact_data["contactName"],
-                        ":updated": int(datetime.utcnow().timestamp()),
+                        ":updated": str(datetime.now(tz=timezone.utc)),
                     },
                     ReturnValues="UPDATED_NEW",
                 )
