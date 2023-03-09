@@ -30,6 +30,8 @@ cp .env.example .env
 
 * Add the respective values inside .env file
 
+## Also add the respective environment value as per the env inside .env file (ENV)
+### Choice for ENV are local, dev, staging, prod
 
 * Run code
 ```bash

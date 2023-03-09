@@ -14,6 +14,7 @@ from pathlib import Path
 
 import json
 from dotenv import load_dotenv
+from aapooncontact.utils import get_env_database
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,6 +28,7 @@ env = os.environ
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env["DEBUG"]
+ENV = env["ENV"]
 
 ALLOWED_HOSTS = ["*"]
 
@@ -36,7 +38,7 @@ ALLOWED_HOSTS = ["*"]
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "NAME": BASE_DIR / f"{get_env_database(ENV)}",
     },
     "xmpp": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
@@ -100,7 +102,7 @@ SECRET_KEY = env["SECRET_KEY"]
 
 AWS_ACCESS_KEY_ID = env["AWS_ACCESS_KEY_ID"]
 AWS_SECRET_ACCESS_KEY = env["AWS_SECRET_ACCESS_KEY"]
-#TABLE_NAME = os.environ.get("TABLE_NAME", "")
+# TABLE_NAME = os.environ.get("TABLE_NAME", "")
 
 aapoon_BASE_URL = env["aapoon_BASE_URL"]
 aapoon_API_KEY = env["aapoon_API_KEY"]
