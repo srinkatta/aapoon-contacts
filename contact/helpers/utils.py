@@ -7,7 +7,7 @@ def check_friend_status(contacts):
     payload = {
         "contacts": contacts,
     }
-    url = f"{aapoon_BASE_URL}/api/v1/user/check/"
+    url = f"{aapoon_BASE_URL}/api/users/user_friends_check/"
     
     print(url)
     print(payload)
