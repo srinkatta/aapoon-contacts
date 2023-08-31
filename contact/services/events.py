@@ -24,7 +24,7 @@ class ContactsEvents:
             "events",
             aws_access_key_id=self.AWS_ACCESS_KEY_ID,
             aws_secret_access_key=self.AWS_SECRET_ACCESS_KEY,
-            region_name="ap-south-1",
+            region_name=settings.AWS_EVENT_REGION,
         )
         return
 
@@ -39,7 +39,7 @@ class ContactsEvents:
             response = self.client.put_events(
                 Entries=[
                     {
-                        "EventBusName": "aapoon-messenger-prod-event-bus",
+                        "EventBusName": settings.EVENT_BUS_NAME,
                         "Time": str(datetime.utcnow().strftime(fmt)),
                         "Source": "contacts.service",
                         "DetailType": "ContactsSyncEvent",

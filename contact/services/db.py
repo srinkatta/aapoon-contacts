@@ -24,13 +24,13 @@ class Contacts:
             "dynamodb",
             aws_access_key_id=self.AWS_ACCESS_KEY_ID,
             aws_secret_access_key=self.AWS_SECRET_ACCESS_KEY,
-            region_name="us-east-1",
+            region_name=settings.AWS_DYNAMODB_REGION,
         )
         self.dynamodb = boto3.resource(
             "dynamodb",
             aws_access_key_id=self.AWS_ACCESS_KEY_ID,
             aws_secret_access_key=self.AWS_SECRET_ACCESS_KEY,
-            region_name="us-east-1",
+            region_name=settings.AWS_DYNAMODB_REGION,
         )
         return
 
