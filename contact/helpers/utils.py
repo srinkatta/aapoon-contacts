@@ -8,7 +8,6 @@ def check_friend_status(contacts):
         "contacts": contacts,
     }
     url = f"{APP_BASE_URL}/api/users/user_friends_check/"
-    
     print(url)
     print(payload)
     print(USER_API_KEY)
