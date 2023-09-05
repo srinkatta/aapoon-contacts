@@ -76,8 +76,8 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
 
             askmessage = ""
             if contact["appUser"]:
-                nick = f"{nick}-appuser"
-                askmessage = "appuser"
+                nick = f"{nick}-aapoon"
+                askmessage = "aapoon"
 
             if contact_roster in users:
                 print("updating roasters")
