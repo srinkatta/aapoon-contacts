@@ -4,7 +4,7 @@ from datetime import datetime
 
 import boto3
 
-from aapooncontact import settings
+from contact_service import settings
 from contact.helpers.utils import check_friend_status
 
 
@@ -69,7 +69,7 @@ class Contacts:
 
     def list_contacts(self, user_id):
         response = self.table.scan(
-            FilterExpression="contact.aapoonUser = :f AND userid = :uid",
+            FilterExpression="contact.appUser = :f AND userid = :uid",
             ExpressionAttributeValues={
                 ":f": False,
                 ":uid": user_id,
@@ -82,7 +82,7 @@ class Contacts:
         Adds a contact to the table.
         """
         data["id"] = f"{uuid.uuid4()}"
-        data["contact"]["aapoonUser"] = False
+        data["contact"]["appUser"] = False
         data["contact"]["contactCreated"] = str(datetime.now(tz=timezone.utc))
         data["contact"]["contactUpdated"] = str(datetime.now(tz=timezone.utc))
         try:

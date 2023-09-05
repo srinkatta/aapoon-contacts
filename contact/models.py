@@ -9,7 +9,7 @@ class Contact(models.Model):
     name = models.CharField(max_length=250)
     phone_number = models.CharField(max_length=250)
     friend = models.BooleanField(
-        default=False, help_text="This would be true if user is on aapoon."
+        default=False, help_text="This would be true if user is an app user."
     )
 
     def __str__(self):

@@ -1,19 +1,19 @@
 import requests
 
-from aapooncontact.settings import aapoon_API_KEY, aapoon_BASE_URL
+from contact_service.settings import USER_API_KEY, APP_BASE_URL
 
 
 def check_friend_status(contacts):
     payload = {
         "contacts": contacts,
     }
-    url = f"{aapoon_BASE_URL}/api/users/user_friends_check/"
+    url = f"{APP_BASE_URL}/api/users/user_friends_check/"
     
     print(url)
     print(payload)
-    print(aapoon_API_KEY)
-    print("aapoon User check")
-    headers = {"Authorization": f"Api-Key {aapoon_API_KEY}"}
+    print(USER_API_KEY)
+    print("App User check")
+    headers = {"Authorization": f"Api-Key {USER_API_KEY}"}
     result = requests.post(url, json=payload, headers=headers)
     print(result.text)
     if result.status_code == 200:

@@ -5,7 +5,7 @@ from datetime import datetime
 
 import boto3
 
-from aapooncontact import settings
+from contact_service import settings
 from contact.helpers.utils import check_friend_status
 
 
