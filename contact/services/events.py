@@ -24,7 +24,7 @@ class ContactsEvents:
             "events",
             aws_access_key_id=self.AWS_ACCESS_KEY_ID,
             aws_secret_access_key=self.AWS_SECRET_ACCESS_KEY,
-            region_name=settings.AWS_EVENT_REGION,
+            region_name=settings.AWS_EVENTBRIDGE_REGION,
         )
         return
 
