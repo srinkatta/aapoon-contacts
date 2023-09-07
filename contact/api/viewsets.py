@@ -75,7 +75,7 @@ class ContactViewSet(BulkCreateContactMixin, viewsets.ModelViewSet):
         detail=False,
         methods=["post"],
         url_path=r"queue",
-        permission_classes=[permissions.AllowAny, HasAPIKey],
+        permission_classes=[permissions.AllowAny | HasAPIKey],
         serializer_class=ContactSerializer,
     )
     def contacts_queue(self, request, *args, **kwargs):
