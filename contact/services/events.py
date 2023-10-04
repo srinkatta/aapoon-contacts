@@ -5,7 +5,7 @@ from datetime import datetime
 
 import boto3
 
-from contact_service import settings
+from aapooncontact import settings
 from contact.helpers.utils import check_friend_status
 
 
@@ -24,7 +24,7 @@ class ContactsEvents:
             "events",
             aws_access_key_id=self.AWS_ACCESS_KEY_ID,
             aws_secret_access_key=self.AWS_SECRET_ACCESS_KEY,
-            region_name=settings.AWS_EVENTBRIDGE_REGION,
+            region_name="ap-south-1",
         )
         return
 
@@ -39,7 +39,7 @@ class ContactsEvents:
             response = self.client.put_events(
                 Entries=[
                     {
-                        "EventBusName": settings.EVENT_BUS_NAME,
+                        "EventBusName": "aapoon-messenger-prod-event-bus",
                         "Time": str(datetime.utcnow().strftime(fmt)),
                         "Source": "contacts.service",
                         "DetailType": "ContactsSyncEvent",

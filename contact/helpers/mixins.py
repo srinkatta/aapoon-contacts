@@ -6,7 +6,7 @@ from rest_framework.mixins import CreateModelMixin, DestroyModelMixin, UpdateMod
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 
-from contact_service.settings import APP_BASE_URL
+from aapooncontact.settings import aapoon_BASE_URL
 from contact.helpers.utils import check_friend_status
 from contact.services.db import Contacts
 
@@ -66,16 +66,16 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
         user_jid = f"{username}@{settings.XMPP_HOST}"
         query = f"select * from rosterusers where username='{username}'"
         users = self.fetch_rosteruser(query)
-        status, app_contacts = check_friend_status(contacts)
+        status, aapoon_contacts = check_friend_status(contacts)
 
-        for contact in app_contacts:
+        for contact in aapoon_contacts:
             contact_phone_number = contact["contactPhoneNumber"]
             contact_jid = f"{contact_phone_number}@{settings.XMPP_HOST}"
             nick = contact["contactName"]
             contact_roster = {"username": username, "jid": contact_jid}
 
             askmessage = ""
-            if contact["appUser"]:
+            if contact["aapoonUser"]:
                 nick = f"{nick}-aapoon"
                 askmessage = "aapoon"
 

@@ -1,10 +1,10 @@
 import requests
 
-from contact_service.settings import APP_BASE_URL
+from aapooncontact.settings import aapoon_BASE_URL
 
 
 def call_friend_app(payload):
-    url = f"{APP_BASE_URL}/api/friends/check/"
+    url = f"{aapoon_BASE_URL}/api/friends/check/"
     print("++++++++")
     print("friends api")
     print(url)
