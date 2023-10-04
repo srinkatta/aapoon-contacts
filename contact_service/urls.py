@@ -1,4 +1,4 @@
-"""aapooncontact URL Configuration
+"""contact_service URL Configuration
 """
 from django.contrib import admin
 from django.urls import include, path
@@ -8,7 +8,7 @@ from drf_spectacular.views import (
     SpectacularSwaggerView,
 )
 
-from aapooncontact.router_urls import router_urlpatterns
+from contact_service.router_urls import router_urlpatterns
 
 urlpatterns = [
     path("admin/", admin.site.urls),
