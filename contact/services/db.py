@@ -4,7 +4,7 @@ from datetime import datetime
 
 import boto3
 
-from contact_service import settings
+from aapooncontact import settings
 from contact.helpers.utils import check_friend_status
 
 
@@ -24,13 +24,13 @@ class Contacts:
             "dynamodb",
             aws_access_key_id=self.AWS_ACCESS_KEY_ID,
             aws_secret_access_key=self.AWS_SECRET_ACCESS_KEY,
-            region_name=settings.AWS_DYNAMODB_REGION,
+            region_name="us-east-1",
         )
         self.dynamodb = boto3.resource(
             "dynamodb",
             aws_access_key_id=self.AWS_ACCESS_KEY_ID,
             aws_secret_access_key=self.AWS_SECRET_ACCESS_KEY,
-            region_name=settings.AWS_DYNAMODB_REGION,
+            region_name="us-east-1",
         )
         return
 
@@ -69,7 +69,7 @@ class Contacts:
 
     def list_contacts(self, user_id):
         response = self.table.scan(
-            FilterExpression="contact.appUser = :f AND userid = :uid",
+            FilterExpression="contact.aapoonUser = :f AND userid = :uid",
             ExpressionAttributeValues={
                 ":f": False,
                 ":uid": user_id,
@@ -82,7 +82,7 @@ class Contacts:
         Adds a contact to the table.
         """
         data["id"] = f"{uuid.uuid4()}"
-        data["contact"]["appUser"] = False
+        data["contact"]["aapoonUser"] = False
         data["contact"]["contactCreated"] = str(datetime.now(tz=timezone.utc))
         data["contact"]["contactUpdated"] = str(datetime.now(tz=timezone.utc))
         try:
