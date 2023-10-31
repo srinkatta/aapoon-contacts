@@ -1,4 +1,5 @@
 import requests
+import time
 from django.conf import settings
 from django.db import connections
 from pyfcm import FCMNotification
@@ -154,6 +155,7 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
         print(result)
 
     def create(self, request, *args, **kwargs):
+        start_time = time.time()
         self.values = []
         query = "INSERT INTO rosterusers (username, jid, nick, subscription, ask, askmessage, server, subscribe, type) VALUES "
         print("Event trigger to the Contact API for Processing rosters")
@@ -183,6 +185,9 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
                 query = f"{query} ON CONFLICT (username, jid) DO NOTHING"
                 self.execute_xmpp_query(query)
             self.__trigger_notification(detail["UserFcmToken"])
+            end_time = time.time()
+            response_time = end_time - start_time
+            print(f"API response time: {response_time} seconds")
             return Response(data)
         else:
             self.renderer_classes = (JSONRenderer,)
@@ -215,6 +220,9 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
                 query = f"{query}{self.values}"
                 self.execute_xmpp_query(query)
             self.__trigger_notification(fcm_token)
+            end_time = time.time()
+            response_time = end_time - start_time
+            print(f"API response time: {response_time} seconds")
             return Response(results)
 
     def update(self, request, pk, *args, **kwargs):
@@ -222,6 +230,7 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
         id = "bulk" in order to update contacts in bulk.
         """
         if pk == "bulk":
+            start_time = time.time()
             self.renderer_classes = (JSONRenderer,)
             request.accepted_renderer = JSONRenderer()
             list_data = request.data
@@ -238,6 +247,9 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
                     "message": "Contact updated successfully",
                 }
                 results.append(data)
+                end_time = time.time()
+                response_time = end_time - start_time
+                print(f"API response time: {response_time} seconds")
             return Response(results)
         else:
             data = {"message": "bulk not persent in url"}
