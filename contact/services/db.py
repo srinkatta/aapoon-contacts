@@ -13,7 +13,7 @@ class Contacts:
 
     def __init__(self):
         self.AWS_ACCESS_KEY_ID = settings.EVENT_AWS_ACCESS_KEY_ID
-        self.AWS_SECRET_ACCESS_KEY = settings.AWS_SECRET_ACCESS_KEY
+        self.AWS_SECRET_ACCESS_KEY = settings.EVENT_AWS_SECRET_ACCESS_KEY
         self.client = None
         self.dynamodb = None
         self.initialize()
