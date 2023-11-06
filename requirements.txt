@@ -40,3 +40,4 @@ typing_extensions==4.2.0
 uritemplate==4.1.1
 urllib3==1.26.9
 zipp==3.8.0
+django-storages==1.14.2
