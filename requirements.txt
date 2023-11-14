@@ -40,3 +40,4 @@ typing_extensions==4.8.0
 uritemplate==4.1.1
 zipp==3.17.0
 django-storages==1.14.2
+django-cors-headers==4.3.0
