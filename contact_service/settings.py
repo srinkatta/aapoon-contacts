@@ -67,6 +67,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -98,6 +99,8 @@ WSGI_APPLICATION = "contact_service.wsgi.application"
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env["SECRET_KEY"]
+
+CSRF_TRUSTED_ORIGINS = os.environ["CSRF_TRUSTED_ORIGINS"].split(",")
 
 EVENT_AWS_ACCESS_KEY_ID = env["AWS_ACCESS_KEY_ID"]
 EVENT_AWS_SECRET_ACCESS_KEY = env["AWS_SECRET_ACCESS_KEY"]
