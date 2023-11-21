@@ -40,7 +40,7 @@ class ContactsEvents:
                 Entries=[
                     {
                         "EventBusName": settings.EVENT_BUS_NAME,
-                        "Time": str(datetime.utcnow().strftime(fmt)),
+                        "Time": str(datetime.now(tz=timezone.utc).strftime(fmt)),
                         "Source": "contacts.service",
                         "DetailType": "ContactsSyncEvent",
                         "Detail": json.dumps(data),
