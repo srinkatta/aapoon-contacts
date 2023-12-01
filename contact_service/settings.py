@@ -61,11 +61,13 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_api_key",
     "drf_spectacular",
+    "storages",
     # Custom App
     "contact",
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -98,8 +100,10 @@ WSGI_APPLICATION = "contact_service.wsgi.application"
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env["SECRET_KEY"]
 
-AWS_ACCESS_KEY_ID = env["AWS_ACCESS_KEY_ID"]
-AWS_SECRET_ACCESS_KEY = env["AWS_SECRET_ACCESS_KEY"]
+CSRF_TRUSTED_ORIGINS = os.environ["CSRF_TRUSTED_ORIGINS"].split(",")
+
+EVENT_AWS_ACCESS_KEY_ID = env["AWS_ACCESS_KEY_ID"]
+EVENT_AWS_SECRET_ACCESS_KEY = env["AWS_SECRET_ACCESS_KEY"]
 #TABLE_NAME = os.environ.get("TABLE_NAME", "")
 
 # Password validation
@@ -135,11 +139,6 @@ USE_L10N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.2/howto/static-files/
-
-STATIC_URL = "/static/"
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
@@ -165,3 +164,21 @@ EVENT_BUS_NAME = env["EVENT_BUS_NAME"]
 
 APP_BASE_URL = env["APP_BASE_URL"]
 USER_API_KEY = env["USER_API_KEY"]
+
+
+AWS_ACCESS_KEY_ID = os.environ["STATIC_AWS_ACCESS_KEY_ID"]
+AWS_SECRET_ACCESS_KEY = os.environ["STATIC_AWS_SECRET_ACCESS_KEY"]
+AWS_STORAGE_BUCKET_NAME = os.environ["STATIC_AWS_STORAGE_BUCKET_NAME"]
+AWS_S3_REGION_NAME = os.environ["STATIC_AWS_S3_REGION_NAME"]
+AWS_S3_CUSTOM_DOMAIN = os.environ["STATIC_AWS_S3_CUSTOM_DOMAIN"]
+
+AWS_S3_OBJECT_PARAMETERS = {
+    "CacheControl": "max-age=86400",  # cache static files for 1 day
+}
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/4.0/howto/static-files/
+
+AWS_LOCATION = "static"
+STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/"
+STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
