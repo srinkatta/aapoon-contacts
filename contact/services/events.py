@@ -1,7 +1,7 @@
 import json
 import threading
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
 import boto3
 
