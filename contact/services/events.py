@@ -1,7 +1,7 @@
 import json
 import threading
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
 import boto3
 
@@ -40,7 +40,7 @@ class ContactsEvents:
                 Entries=[
                     {
                         "EventBusName": settings.EVENT_BUS_NAME,
-                        "Time": str(datetime.utcnow().strftime(fmt)),
+                        "Time": str(datetime.now(tz=timezone.utc).strftime(fmt)),
                         "Source": "contacts.service",
                         "DetailType": "ContactsSyncEvent",
                         "Detail": json.dumps(data),

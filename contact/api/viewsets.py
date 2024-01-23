@@ -34,6 +34,9 @@ class ContactViewSet(BulkCreateContactMixin, viewsets.ModelViewSet):
         ]
     )
     def list(self, request):
+        import sys
+        python_version = sys.version   # Todo remove after python version verify
+        logger.info(f"Python Version from logger: {python_version}")
         user_id = request.GET.get("userid", "")
         if not user_id:
             return Response({"data": "userid required in params"})
