@@ -23,7 +23,7 @@ requests==2.31.0
 six==1.16.0
 sqlparse==0.4.4
 uritemplate==4.1.1
-django-storages==1.14.2
+django-storages==1.14.4
 django-cors-headers==4.3.0
 sentry-sdk==2.2.1
 safety==3.2.0
