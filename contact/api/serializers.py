@@ -1,8 +1,11 @@
 from datetime import datetime
 
+from urllib.parse import urlparse
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 from contact.models import Contact
+from common.prevent_ssrf import PreventSSRF
 
 ACTIONS = [
     ("UPDATE_NAME", "UPDATE_NAME"),
@@ -26,3 +29,23 @@ class ContactDeleteSerializer(serializers.Serializer):
     userid = serializers.CharField()
     contact_country_code = serializers.CharField()
     contact_phone_number = serializers.CharField()
+
+class ExternalRequestSerializer(serializers.Serializer):
+    """
+    Serializer class to validate external request
+    """
+
+    url = serializers.URLField(required=True)
+
+    def validate_url(self, url):
+
+        if not PreventSSRF.is_valid_url(url):
+            raise ValidationError("Invalid URL")
+
+        parsed_uri = urlparse(url)
+        hostname = parsed_uri.hostname
+
+        if not PreventSSRF.is_host_allowed(hostname):
+            raise ValidationError("Host is not allowed")
+
+        return url

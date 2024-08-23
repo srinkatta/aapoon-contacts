@@ -3,9 +3,10 @@ from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework_api_key.permissions import HasAPIKey
 
-from contact.api.serializers import ContactDeleteSerializer, ContactSerializer
+from contact.api.serializers import ContactDeleteSerializer, ContactSerializer, ExternalRequestSerializer
 from contact.helpers.mixins import BulkCreateContactMixin
 from contact.models import Contact
 from contact.services.db import Contacts
@@ -92,3 +93,19 @@ class ContactViewSet(BulkCreateContactMixin, viewsets.ModelViewSet):
             {"data": "Contacts added to queue successfully."},
             status=status.HTTP_200_OK,
         )
+
+
+class ExternalRequestView(APIView):
+    """
+    API View to handle external requests.
+    This API view allows external services to make requests to the APSCHE Messenger API.
+    """
+
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+
+        serializer = ExternalRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        return Response({"success": "Request is allowed"}, status=status.HTTP_200_OK)
