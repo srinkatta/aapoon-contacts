@@ -34,9 +34,12 @@ ALLOWED_HOSTS = ["*"]
 # Swagger Auth
 ENVIRONMENT = os.environ.get("ENVIRONMENT", EnvironmentChoices.PRODUCTION.value)
 
-# Prevent SSRF
-ALLOWED_HOSTS_WHITELIST = list(json.loads(os.environ.get("ALLOWED_HOSTS_WHITELIST", "[]")))
-FORBIDDEN_HOSTS_BLACKLIST = list(json.loads(os.environ.get("FORBIDDEN_HOSTS_BLACKLIST", "[]")))
+def __get_hosts_list(hosts_string: str | None) -> list[str]:
+    return [host.strip().strip("'") for host in hosts_string.split(",")] if hosts_string else []
+
+
+ALLOWED_HOSTS_WHITELIST = __get_hosts_list(os.getenv("ALLOWED_HOSTS_WHITELIST", ""))
+FORBIDDEN_HOSTS_BLACKLIST = __get_hosts_list(os.getenv("FORBIDDEN_HOSTS_BLACKLIST", ""))
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
