@@ -25,7 +25,7 @@ class RosterUser(object):
             "subscribe",
             "type",
         ):
-            setattr(self, field, kwargs.get(field, None))
+            setattr(self, field, kwargs.get(field))
 
     def __str__(self):
         return f"RosterUser(username={str(self.username)} ,jid={self.jid}, nick={self.nick})"
@@ -152,7 +152,6 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
         result = push_service.notify_single_device(
             registration_id=fcm_token, data_message=data_message, content_available=True
         )
-        print(result)
 
     def create(self, request, *args, **kwargs):
         start_time = time.time()
