@@ -56,16 +56,33 @@ class Contacts:
 
     def get_contact_with_old_phone_details(self, data):
         contact = data["contact"]
-        response = self.table.scan(
-            FilterExpression="contact.contactCountryCode = :code AND contact.contactPhoneNumber = :ph AND userid = :userid",
-            ExpressionAttributeValues={
-                ":code": f"{contact['contactOldCountryCode']}",
-                ":ph": f"{contact['contactOldPhoneNumber']}",
-                ":userid": f"{data['userid']}",
-            },
-        )
+        items = []
+        last_evaluated_key = None
 
-        return response["Items"]
+        while True:
+            # Perform the scan operation
+            scan_params = {
+                "FilterExpression": "contact.contactCountryCode = :code AND contact.contactPhoneNumber = :ph AND userid = :userid",
+                "ExpressionAttributeValues": {
+                    ":code": f"{contact['contactOldCountryCode']}",
+                    ":ph": f"{contact['contactOldPhoneNumber']}",
+                    ":userid": f"{data['userid']}",
+                },
+            }
+
+            # If there's a LastEvaluatedKey, include it in the next scan
+            if last_evaluated_key:
+                scan_params["ExclusiveStartKey"] = last_evaluated_key
+
+            response = self.table.scan(**scan_params)
+            items.extend(response.get("Items", []))
+
+            # Check if there are more results to retrieve
+            last_evaluated_key = response.get("LastEvaluatedKey")
+            if not last_evaluated_key:
+                break
+
+        return items
 
     def list_contacts(self, user_id):
         response = self.table.scan(

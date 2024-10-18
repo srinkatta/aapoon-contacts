@@ -14,18 +14,20 @@ from contact.services.db import Contacts
 
 class RosterUser(object):
     def __init__(self, **kwargs):
-        for field in (
-            "username",
-            "jid",
-            "nick",
-            "subscription",
-            "ask",
-            "askmessage",
-            "server",
-            "subscribe",
-            "type",
-        ):
-            setattr(self, field, kwargs.get(field))
+        defaults = {
+            "username": "",
+            "jid": None,
+            "nick": "",
+            "subscription": None,
+            "ask": None,
+            "askmessage": "",
+            "server": None,
+            "subscribe": None,
+            "type": "",
+        }
+
+        for field, default in defaults.items():
+            setattr(self, field, kwargs.get(field, default))
 
     def __str__(self):
         return f"RosterUser(username={str(self.username)} ,jid={self.jid}, nick={self.nick})"
@@ -147,8 +149,6 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
             "content_available": True
             
         }
-        print(data_message)
-        message_body = f"Hi there, contact sync was completed successfully"
         result = push_service.notify_single_device(
             registration_id=fcm_token, data_message=data_message, content_available=True
         )
