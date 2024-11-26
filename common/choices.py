@@ -1,10 +1,10 @@
 import enum
 
 
-class EnvironmentChoices(enum.StrEnum):
+class EnvironmentChoices(enum.Enum):
     """
     Environment choices for the application.
-    
+
     PRODUCTION: Production environment
     LOCAL: Local environment
     DEVELOPMENT: Development environment
@@ -15,3 +15,6 @@ class EnvironmentChoices(enum.StrEnum):
     LOCAL = "local"
     DEVELOPMENT = "development"
     QA = "qa"
+
+    def __str__(self):
+        return self.value  # Ensures string representation of the enum

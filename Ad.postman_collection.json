@@ -1,0 +1,47 @@
+{
+	"info": {
+		"_postman_id": "b23929c0-a678-4db0-a9e1-d5f9f65cfc74",
+		"name": "Ad",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "3147158"
+	},
+	"item": [
+		{
+			"name": "Add aapoon Contact API",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Api-Key 9dReP2Wj.Iqmn22UlVRH03Q8DQTiu0x0yjD6T64G2",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n   \"version\":\"0\",\n   \"id\":\"25deeaa7-f687-052e-72e6-598f00a32eb5\",\n   \"detail-type\":\"ContactsSyncEvent\",\n   \"source\":\"contacts.service\",\n   \"account\":\"877786019783\",\n   \"time\":\"2024-11-15T06:26:55Z\",\n   \"region\":\"us-east-1\",\n   \"resources\":[\n      \n   ],\n   \"detail\":{\n      \"userid\":\"919500840196\",\n      \"UserFcmToken\":\"fb1cQNbiRlmoVUvbduto7a:APA91bF3UYNuZvU62MTkfBhL7FhPOKcIleoDGlcXhbqp_FV1M7fb0GdF6HzaOASSgeEbUAIvgoUpakRC9ZCqWFUmgPcI5IjehjQFk-4NQz-OSPFccE0ifuE\",\n      \"contacts\":[\n         {\n            \"contactName\":\"A Malleswari\",\n            \"contactPhoneNumber\":\"917702510919\"\n         },\n         {\n            \"contactName\":\"Dj\",\n            \"contactPhoneNumber\":\"9118327909786\"\n         },\n         {\n            \"contactName\":\"L Konda Reddy Bl\",\n            \"contactPhoneNumber\":\"919900430888\"\n         },\n         {\n            \"contactName\":\"M Varalakshmi\",\n            \"contactPhoneNumber\":\"919346779392\"\n         },\n         {\n            \"contactName\":\"Manu 1\",\n            \"contactPhoneNumber\":\"918331866191\"\n         },\n         {\n            \"contactName\":\"Natu Venkatapura\",\n            \"contactPhoneNumber\":\"919542635409\"\n         },\n         {\n            \"contactName\":\"Niranjan Reddy\",\n            \"contactPhoneNumber\":\"917396953736\"\n         },\n         {\n            \"contactName\":\"Prasadhu Ana\",\n            \"contactPhoneNumber\":\"919849285648\"\n         },\n         {\n            \"contactName\":\"Prasadhu Lvpalli\",\n            \"contactPhoneNumber\":\"919160626170\"\n         },\n         {\n            \"contactName\":\"Saroja\",\n            \"contactPhoneNumber\":\"918897006134\"\n         },\n         {\n            \"contactName\":\"Venkatalakshmi\",\n            \"contactPhoneNumber\":\"919676833886\"\n         },\n         {\n            \"contactName\":\"Vgr Lvp\",\n            \"contactPhoneNumber\":\"919989495057\"\n         }\n      ]\n   }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://qa.aapoon.com/api/contacts/",
+					"protocol": "https",
+					"host": [
+						"qa",
+						"aapoon",
+						"com"
+					],
+					"path": [
+						"api",
+						"contacts",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
