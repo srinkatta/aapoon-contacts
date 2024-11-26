@@ -55,7 +55,7 @@ DATABASES = {
         "USER": env["XMPP_DB_USERNAME"],
         "PASSWORD": env["XMPP_DB_PASSWORD"],
         "HOST": env["XMPP_DB_HOST"],
-        "PORT": "5432",
+        "PORT": env["DATABASE_PORT"]
     },
 }
 
@@ -111,11 +111,11 @@ WSGI_APPLICATION = "contact_service.wsgi.application"
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env["SECRET_KEY"]
 
-CSRF_TRUSTED_ORIGINS = os.environ["CSRF_TRUSTED_ORIGINS"].split(",")
+CSRF_TRUSTED_ORIGINS = ["http://localhost:3000"] #os.environ["CSRF_TRUSTED_ORIGINS"].split(",")
 
 EVENT_AWS_ACCESS_KEY_ID = env["AWS_ACCESS_KEY_ID"]
 EVENT_AWS_SECRET_ACCESS_KEY = env["AWS_SECRET_ACCESS_KEY"]
-#TABLE_NAME = os.environ.get("TABLE_NAME", "")
+TABLE_NAME = os.environ.get("TABLE_NAME", "")
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -209,3 +209,4 @@ if IS_SENTRY_ENABLED:
         dsn=SENTRY_DSN,
         enable_tracing=True,
     )
+FCM_API_KEY = os.getenv("FCM_API_KEY")

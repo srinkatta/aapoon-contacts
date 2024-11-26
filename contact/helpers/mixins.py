@@ -6,7 +6,7 @@ from pyfcm import FCMNotification
 from rest_framework.mixins import CreateModelMixin, DestroyModelMixin, UpdateModelMixin
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
-
+from requests.exceptions import Timeout
 from contact_service.settings import APP_BASE_URL
 from contact.helpers.utils import check_friend_status
 from contact.services.db import Contacts
@@ -92,23 +92,23 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
                 print("adding new roasters")
 
                 user_query = (
-                    f"{username}",
-                    f"{contact_jid}",
-                    f"{nick}",
+                    username,
+                    contact_jid,
+                    nick,
                     "B",
                     "N",
-                    f"{askmessage}",
+                    askmessage,
                     "N",
                     "",
                     "item",
                 )
                 roaster_query = (
-                    f"{contact_phone_number}",
-                    f"{user_jid}",
+                    contact_phone_number,
+                    user_jid,
                     "",
                     "B",
                     "N",
-                    f"{askmessage}",
+                    askmessage,
                     "N",
                     "",
                     "item",
@@ -137,21 +137,40 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
 
     def __trigger_notification(self, fcm_token):
         push_service = FCMNotification(api_key=settings.FCM_API_KEY)
+
         message_title = "Contact Sync complete"
         data_message = {
             "contactid": "Contact Sync",
             "notification": {
-                    "sound": "default",
-                    "body": "Hi there, contact sync was completed successfully"
+                "sound": "default",
+                "body": "Hi there, contact sync was completed successfully"
             },
             "to": fcm_token,
             "priority": "high",
             "content_available": True
-            
         }
-        result = push_service.notify_single_device(
-            registration_id=fcm_token, data_message=data_message, content_available=True
-        )
+
+        retries = 3  # Maximum number of retries
+        for attempt in range(retries):
+            try:
+                # Send notification
+                result = push_service.notify_single_device(
+                    registration_id=fcm_token,
+                    data_message=data_message,
+                    content_available=True
+                )
+                print("Notification sent successfully:", result)
+                break
+            except Timeout:
+                print(f"Timeout error (Attempt {attempt+1}/{retries}). Retrying in 5 seconds...")
+                time.sleep(5)
+            except Exception as e:
+                print(f"Error sending notification (Attempt {attempt+1}/{retries}): {e}")
+                if attempt < retries - 1:
+                    print("Retrying...")
+                    time.sleep(5)
+                else:
+                    print("Max retries reached. Notification failed.")
 
     def create(self, request, *args, **kwargs):
         start_time = time.time()
