@@ -163,7 +163,7 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
                 break
             except Timeout:
                 print(f"Timeout error (Attempt {attempt+1}/{retries}). Retrying in 5 seconds...")
-                time.sleep(5)
+                time.sleep(0)
             except Exception as e:
                 print(f"Error sending notification (Attempt {attempt+1}/{retries}): {e}")
                 if attempt < retries - 1:

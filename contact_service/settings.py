@@ -49,14 +49,14 @@ DATABASES = {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
     },
-    "xmpp": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": env["XMPP_DB_NAME"],
-        "USER": env["XMPP_DB_USERNAME"],
-        "PASSWORD": env["XMPP_DB_PASSWORD"],
-        "HOST": env["XMPP_DB_HOST"],
-        "PORT": env["DATABASE_PORT"]
-    },
+    # "xmpp": {
+    #     "ENGINE": "django.db.backends.postgresql_psycopg2",
+    #     "NAME": env["XMPP_DB_NAME"],
+    #     "USER": env["XMPP_DB_USERNAME"],
+    #     "PASSWORD": env["XMPP_DB_PASSWORD"],
+    #     "HOST": env["XMPP_DB_HOST"],
+    #     "PORT": env["DATABASE_PORT"]
+    # },
 }
 
 
@@ -210,3 +210,9 @@ if IS_SENTRY_ENABLED:
         enable_tracing=True,
     )
 FCM_API_KEY = os.getenv("FCM_API_KEY")
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+}
