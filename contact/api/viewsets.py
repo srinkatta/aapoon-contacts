@@ -5,14 +5,11 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_api_key.permissions import HasAPIKey
-
 from contact.api.serializers import ContactDeleteSerializer, ContactSerializer, ExternalRequestSerializer
 from contact.helpers.mixins import BulkCreateContactMixin
 from contact.models import Contact
 from contact.services.db import Contacts
 from contact.services.events import ContactsEvents
-
-
 class ContactViewSet(BulkCreateContactMixin, viewsets.ModelViewSet):
     """
     Viewset for Contact Model
@@ -35,9 +32,6 @@ class ContactViewSet(BulkCreateContactMixin, viewsets.ModelViewSet):
         ]
     )
     def list(self, request):
-        import sys
-        python_version = sys.version   # Todo remove after python version verify
-        logger.info(f"Python Version from logger: {python_version}")
         user_id = request.GET.get("userid", "")
         if not user_id:
             return Response({"data": "userid required in params"})
