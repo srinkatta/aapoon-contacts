@@ -13,7 +13,6 @@ from django.conf.urls.static import static
 from contact_service.router_urls import router_urlpatterns
 
 from common.choices import EnvironmentChoices
-from contact.api.viewsets import UpdatePhoneNumberView
 
 def trigger_error(request):
     raise ValueError("[SENTRY] -- This is a deliberate error for testing purposes")
@@ -23,7 +22,6 @@ urlpatterns = [
     path("api/", include(router_urlpatterns)),
     path("api-auth/", include("rest_framework.urls")),
     path("api/contacts/sentry-debug/", trigger_error),
-    path('user/update_phone/', UpdatePhoneNumberView.as_view(), name='update-phone'),
 ]
 
 
@@ -43,10 +41,6 @@ if settings.ENVIRONMENT not in [
             "api/contacts/schema/redoc/",
             SpectacularRedocView.as_view(url_name="schema"),
             name="redoc",
-        ),
-        path('api/contacts/user/update_phone/',
-        UpdatePhoneNumberView.as_view(),
-        name='update-phone'
         ),
     ]
 

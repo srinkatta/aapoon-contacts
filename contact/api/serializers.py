@@ -49,8 +49,3 @@ class ExternalRequestSerializer(serializers.Serializer):
             raise ValidationError("Host is not allowed")
 
         return url
-
-class PhoneNumberSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Contact
-        fields = ['phone_number']

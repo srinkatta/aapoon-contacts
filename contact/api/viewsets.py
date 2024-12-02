@@ -10,7 +10,6 @@ from contact.helpers.mixins import BulkCreateContactMixin
 from contact.models import Contact
 from contact.services.db import Contacts
 from contact.services.events import ContactsEvents
-from rest_framework.exceptions import AuthenticationFailed
 class ContactViewSet(BulkCreateContactMixin, viewsets.ModelViewSet):
     """
     Viewset for Contact Model
@@ -104,24 +103,3 @@ class ExternalRequestView(APIView):
         serializer.is_valid(raise_exception=True)
 
         return Response({"success": "Request is allowed"}, status=status.HTTP_200_OK)
-
-class UpdatePhoneNumberView(APIView):
-    def post(self, request, *args, **kwargs):
-        '''Check if the user is authenticated'''
-        if not request.user.is_authenticated:
-            raise AuthenticationFailed("User is not authenticated")
-
-        phone_number = request.data.get('phone_number')
-
-        """Validate phone number"""
-        if not phone_number:
-            return Response({"error": "Phone number is required"}, status=status.HTTP_400_BAD_REQUEST)
-
-        """Update the phone number"""
-        try:
-            user = request.user
-            user.phone_number = phone_number
-            user.save()
-            return Response({"message": "Phone number updated successfully"})
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
