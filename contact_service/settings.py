@@ -27,7 +27,7 @@ load_dotenv()  # take environment variables from .env.
 env = os.environ
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env["DEBUG"]
+DEBUG = os.environ.get("DEBUG")
 
 ALLOWED_HOSTS = ["*"]
 
