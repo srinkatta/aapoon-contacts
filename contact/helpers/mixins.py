@@ -183,7 +183,7 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
                 query = f"{query}{self.values}"
                 query = f"{query} ON CONFLICT (username, jid) DO NOTHING"
                 self.execute_xmpp_query(query)
-            self.__trigger_notification(detail["UserFcmToken"])
+            # self.__trigger_notification(detail["UserFcmToken"])
             end_time = time.time()
             response_time = end_time - start_time
             print(f"API response time: {response_time} seconds")
@@ -218,7 +218,7 @@ class BulkCreateContactMixin(CreateModelMixin, UpdateModelMixin):
                 self.values = str(self.values).replace("]", "")
                 query = f"{query}{self.values}"
                 self.execute_xmpp_query(query)
-            self.__trigger_notification(fcm_token)
+            # self.__trigger_notification(fcm_token)
             end_time = time.time()
             response_time = end_time - start_time
             print(f"API response time: {response_time} seconds")
